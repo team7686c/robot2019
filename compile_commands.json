@@ -28,7 +28,7 @@
             "-fdiagnostics-color",
             "--std=gnu++17",
             "-o",
-            "C:/Users/PLTW/AppData/Local/Temp/tmppqbifxgp/initialize.cpp.o",
+            "C:/Users/PLTW/AppData/Local/Temp/tmpawofyzka/initialize.cpp.o",
             "src\\initialize.cpp"
         ],
         "directory": "C:\\Users\\PLTW\\Robot2019",
@@ -63,7 +63,7 @@
             "-fdiagnostics-color",
             "--std=gnu++17",
             "-o",
-            "C:/Users/PLTW/AppData/Local/Temp/tmppqbifxgp/autonomous.cpp.o",
+            "C:/Users/PLTW/AppData/Local/Temp/tmpawofyzka/autonomous.cpp.o",
             "src\\autonomous.cpp"
         ],
         "directory": "C:\\Users\\PLTW\\Robot2019",
@@ -98,7 +98,7 @@
             "-fdiagnostics-color",
             "--std=gnu++17",
             "-o",
-            "C:/Users/PLTW/AppData/Local/Temp/tmppqbifxgp/opcontrol.cpp.o",
+            "C:/Users/PLTW/AppData/Local/Temp/tmpawofyzka/opcontrol.cpp.o",
             "src\\opcontrol.cpp"
         ],
         "directory": "C:\\Users\\PLTW\\Robot2019",
