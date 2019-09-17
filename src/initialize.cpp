@@ -1,15 +1,5 @@
 #include "main.h"
 
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(3, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(3);
-	}
-}
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -17,10 +7,7 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User! 1");
-
-	pros::lcd::register_btn1_cb(on_center_button);
+	
 }
 
 /**
