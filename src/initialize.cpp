@@ -7,7 +7,9 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	
+	std::cout << "Initilize\n";
+	globalState::robotDeviceInterfaces = new RobotDeviceInterfaces();
+	pros::delay(1000);
 }
 
 /**
@@ -26,4 +28,6 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	std::cout << "Competition initilize\n";
+}
