@@ -100,6 +100,6 @@ void opcontrol(){
 		}
 
 		// Wait for next cycle to save power
-		pros::delay(1000 / 50);
+		pros::delay(1000 / 30);
 	}
 }
