@@ -53,7 +53,41 @@ Program ideas:
 // 	}
 // };
 
+class FeedbackController {
+public:
+	virtual void measure(pros::Controller *controller){};
+	virtual void act(RobotDeviceInterfaces *robot){};
+};
 
+class DrivetrainController: public FeedbackController {
+public:
+	int left_drive_speed;
+	int right_drive_speed;
+
+	void measure(pros::Controller *controller){
+		this->left_drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
+		this->right_drive_speed = controller->get_analog(ANALOG_RIGHT_Y) * 200 / 128;
+	}
+
+	void act(RobotDeviceInterfaces *robot){
+		robot->left_drive_motor->move_velocity(this->left_drive_speed);
+		robot->right_drive_motor->move_velocity(this->right_drive_speed);
+	}
+};
+
+class RollerController: public FeedbackController {
+public:
+	int roller_speed;
+
+	void measure(pros::Controller *controller){
+		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
+	}
+
+	void act(RobotDeviceInterfaces* robot){
+		robot->left_roller_motor->move_velocity(this->roller_speed);
+		robot->right_roller_motor->move_velocity(this->roller_speed);
+	}
+};
 
 
 /**
@@ -74,37 +108,34 @@ Program ideas:
 void opcontrol(){
 	std::cout << "Driver control\n";
 
-	std::cout << std::to_string((int)globalState::robotDeviceInterfaces);
-
 	pros::delay(500);
 
-	auto robot = globalState::robotDeviceInterfaces;
+	RobotDeviceInterfaces *robot = global_robot;
+	pros::Controller *controller = global_controller;
 
 	std::cout << "Post init\n";
 
-	int left_drive_speed;
-	int right_drive_speed;
+	std::vector<FeedbackController*> feedbackControllers = {new DrivetrainController(), new RollerController()};
+
 	// int arm_speed;
 	int roller_speed;
 
 	while (true) {
 
 		// Measure phase
-		// robot->measure();
 		std::cout << "Start measure phase\n";
-		left_drive_speed = robot->controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
-		right_drive_speed = robot->controller->get_analog(ANALOG_RIGHT_Y) * 200 / 128;
+		for(int i = 0; i < feedbackControllers.size(); i++){
+			feedbackControllers[i]->measure(controller);
+		}
 		// arm_speed = (robot->controller->get_digital(DIGITAL_L1) - robot->controller->get_digital(DIGITAL_L2)) * 50;
-		roller_speed = (robot->controller->get_digital(DIGITAL_R2) - robot->controller->get_digital(DIGITAL_R1)) * 100;
 
 		// Act phase
-		// robot->act();
 		std::cout << "Start act phase\n";
-		robot->left_drive_motor->move_velocity(left_drive_speed);
-		robot->right_drive_motor->move_velocity(right_drive_speed);
+		for(int i = 0; i < feedbackControllers.size(); i++){
+			feedbackControllers[i]->act(robot);
+		}
 		// arm.move_velocity(arm_speed);
-		robot->left_roller_motor->move_velocity(roller_speed);
-		robot->right_roller_motor->move_velocity(roller_speed);
+
 
 		// Wait for next cycle to save power
 		pros::delay(1000 / 50);

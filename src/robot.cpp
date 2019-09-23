@@ -15,8 +15,6 @@ using namespace pros;
 
 
 RobotDeviceInterfaces::RobotDeviceInterfaces() {
-    this->controller = new Controller(E_CONTROLLER_MASTER);
-
     this->left_drive_motor = new Motor(11, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
     this->right_drive_motor = new Motor(20, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
     this->arm_motor = new Motor(1, E_MOTOR_GEARSET_36, true, E_MOTOR_ENCODER_DEGREES);

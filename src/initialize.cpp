@@ -1,5 +1,8 @@
 #include "main.h"
 
+RobotDeviceInterfaces *global_robot;
+pros::Controller *global_controller;
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -8,8 +11,8 @@
  */
 void initialize() {
 	std::cout << "Initilize\n";
-	globalState::robotDeviceInterfaces = new RobotDeviceInterfaces();
-	pros::delay(1000);
+	global_robot = new RobotDeviceInterfaces();
+	global_controller = new pros::Controller(CONTROLLER_MASTER);
 }
 
 /**
