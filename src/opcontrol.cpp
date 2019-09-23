@@ -1,13 +1,11 @@
 #include "main.h"
 #include <vector>
 
-
 /*
 Program ideas:
 - Have a match clock on the controller screen
 - Have a vibration alarm for 30 seconds and 5 seconds
 */
-
 
 class FeedbackController {
 public:
@@ -91,14 +89,14 @@ void opcontrol(){
 	while (true) {
 		// Measure phase
 		std::cout << "Start measure phase\n";
-		for(int i = 0; i < feedbackControllers.size(); i++){
-			feedbackControllers[i]->measure(controller);
+		for(auto feedbackController: feedbackControllers){
+			feedbackController->measure(controller);
 		}
 
 		// Act phase
 		std::cout << "Start act phase\n";
-		for(int i = 0; i < feedbackControllers.size(); i++){
-			feedbackControllers[i]->act(robot);
+		for(auto feedbackController: feedbackControllers){
+			feedbackController->act(robot);
 		}
 
 		// Wait for next cycle to save power
