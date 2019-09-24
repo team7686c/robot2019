@@ -12,7 +12,7 @@ pros::Controller *global_controller;
 void initialize() {
 	std::cout << "Initilize\n";
 	global_robot = new RobotDeviceInterfaces();
-	global_controller = new pros::Controller(CONTROLLER_MASTER);
+	global_controller = global_robot->controller;
 }
 
 /**

@@ -58,6 +58,29 @@ public:
 	}
 };
 
+class LCDController: public FeedbackController {
+public:
+	int time;
+	int count;
+
+	void measure(pros::Controller *controller){
+		this->count++;
+	}
+
+	void act(RobotDeviceInterfaces *robot){
+		if(this->count % 10 == 0){
+			std::cout << "running controller feedback\n";
+
+			std::cout << "Clear result: " << std::to_string(robot->controller->clear_line(1)) << "\n";
+			std::cout << "Print result: " << std::to_string(robot->controller->set_text(1, 1, "Something")) << "\n";
+		}
+	}
+
+	LCDController(){
+		this->time = pros::millis();
+	}
+};
+
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -84,22 +107,26 @@ void opcontrol(){
 		new DrivetrainController(),
 		new RollerController(),
 		// new ArmController(),
+		new LCDController(),
 	};
 
+	int count = 0;
 	while (true) {
+		// Store the time so the processor can wait the proper amount of time.
+		auto time = pros::millis();
+
 		// Measure phase
-		std::cout << "Start measure phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->measure(controller);
 		}
 
 		// Act phase
-		std::cout << "Start act phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->act(robot);
 		}
 
-		// Wait for next cycle to save power
-		pros::delay(1000 / 30);
+		// Wait for next cycle based on time taken to save power
+		pros::Task::delay_until(&time, 1000 / 30);
+		count++;
 	}
 }
