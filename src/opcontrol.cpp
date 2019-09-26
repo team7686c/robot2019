@@ -125,20 +125,19 @@ void opcontrol(){
 	};
 
 	while (true) {
-		// Store the time so the processor can wait the proper amount of time.
-		auto time = pros::millis();
-
 		// Measure phase
+		std::cout << "Start measure phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->measure(controller);
 		}
 
 		// Act phase
+		std::cout << "Start act phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->act(robot);
 		}
 
-		// Wait for next cycle based on time taken to save power
-		pros::Task::delay_until(&time, 1000 / 30);
+		// Wait for next cycle to save power
+		pros::delay(1000 / 30);
 	}
 }
