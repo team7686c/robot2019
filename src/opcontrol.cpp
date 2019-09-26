@@ -70,17 +70,29 @@ public:
 	void act(RobotDeviceInterfaces *robot){
 		if(this->count % 10 == 0){
 			std::cout << "running controller feedback\n";
-
 			std::cout << "Clear result: " << std::to_string(robot->controller->clear_line(1)) << "\n";
 			std::cout << "Print result: " << std::to_string(robot->controller->set_text(1, 1, "Something")) << "\n";
 		}
 	}
 
 	LCDController(){
+		this->count = 0;
 		this->time = pros::millis();
 	}
 };
 
+class TrayController: public FeedbackController {
+public:
+	int tray_velocity;
+
+	void measure(pros::Controller *controller){
+		this->tray_velocity = (controller->get_digital(DIGITAL_A) - controller->get_digital(DIGITAL_B)) * 100;
+	}
+
+	void act(RobotDeviceInterfaces* robot){
+		robot->tray_motor->move_velocity(this->tray_velocity);
+	}
+};
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -108,6 +120,7 @@ void opcontrol(){
 		new RollerController(),
 		// new ArmController(),
 		new LCDController(),
+		new TrayController(),
 	};
 
 	int count = 0;
