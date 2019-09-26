@@ -90,6 +90,7 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces* robot){
+		// std::cout << "acting on tray: " << std::to_string(this->tray_velocity) << "\n";
 		robot->tray_motor->move_velocity(this->tray_velocity);
 	}
 };
@@ -119,11 +120,10 @@ void opcontrol(){
 		new DrivetrainController(),
 		new RollerController(),
 		// new ArmController(),
-		new LCDController(),
+		// new LCDController(),
 		new TrayController(),
 	};
 
-	int count = 0;
 	while (true) {
 		// Store the time so the processor can wait the proper amount of time.
 		auto time = pros::millis();
@@ -140,6 +140,5 @@ void opcontrol(){
 
 		// Wait for next cycle based on time taken to save power
 		pros::Task::delay_until(&time, 1000 / 30);
-		count++;
 	}
 }
