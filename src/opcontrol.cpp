@@ -90,7 +90,6 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces* robot){
-		// std::cout << "acting on tray: " << std::to_string(this->tray_velocity) << "\n";
 		robot->tray_motor->move_velocity(this->tray_velocity);
 	}
 };
