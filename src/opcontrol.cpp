@@ -84,7 +84,7 @@ public:
 	int tray_velocity;
 
 	void measure(pros::Controller *controller){
-		this->tray_velocity = (controller->get_digital(DIGITAL_A) - controller->get_digital(DIGITAL_B)) * 100;
+		this->tray_velocity = (controller->get_digital(DIGITAL_A) - controller->get_digital(DIGITAL_B)) * 50;
 	}
 
 	void act(RobotDeviceInterfaces* robot){
