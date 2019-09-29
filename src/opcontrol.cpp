@@ -29,7 +29,6 @@ public:
 	}
 };
 
-
 class RollerController: public FeedbackController {
 public:
 	int roller_speed;
@@ -43,7 +42,6 @@ public:
 		robot->right_roller_motor->move_velocity(this->roller_speed);
 	}
 };
-
 
 class ArmController: public FeedbackController {
 public:
