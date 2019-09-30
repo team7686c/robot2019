@@ -116,7 +116,7 @@ void opcontrol(){
 	std::vector<FeedbackController*> feedbackControllers = {
 		new DrivetrainController(),
 		new RollerController(),
-		// new ArmController(),
+		new ArmController(),
 		// new LCDController(),
 		new TrayController(),
 	};

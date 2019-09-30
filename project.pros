@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "Robot2019.2",
+        "project_name": "Robot2019.1",
         "target": "v5",
         "templates": {
             "kernel": {
