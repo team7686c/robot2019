@@ -106,6 +106,7 @@ public:
  * task, not resume it from where it left off.
  */
 
+const int CONTROLLER_POLL_RATE = 1000 / 30;
 
 void opcontrol(){
 	std::cout << "Driver control\n";
@@ -122,6 +123,8 @@ void opcontrol(){
 	};
 
 	while (true) {
+		std::uint32_t time = pros::millis();
+
 		// Measure phase
 		std::cout << "Start measure phase\n";
 		for(auto feedbackController: feedbackControllers){
@@ -135,6 +138,6 @@ void opcontrol(){
 		}
 
 		// Wait for next cycle to save power
-		pros::delay(1000 / 30);
+		pros::Task::delay_until(&time, CONTROLLER_POLL_RATE);
 	}
 }
