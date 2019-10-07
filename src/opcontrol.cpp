@@ -2,11 +2,11 @@
 #include <vector>
 
 /*
- * This class is an interface for the feedback controll loop in the main
+ * This class is an interface for the feedback control loop in the main
  * operator control function. The class splits up the measure phase (reading
  * controller input) and the act phase (setting motor speeds) so that the robot
- * control loop code can be clearly split into classes. In those classes, the
- * variables, measure functions and act functions are clearly defined.
+ * control loop code can be clearly separated. In those classes, the variables,
+ * measure functions and act functions are clearly defined.
  */
 class FeedbackController {
 public:
