@@ -2,11 +2,12 @@
 #include <vector>
 
 /*
-Program ideas:
-- Have a match clock on the controller screen
-- Have a vibration alarm for 30 seconds and 5 seconds
-*/
-
+ * This class is an interface for the feedback controll loop in the main
+ * operator control function. The class splits up the measure phase (reading
+ * controller input) and the act phase (setting motor speeds) so that the robot
+ * control loop code can be clearly split into classes. In those classes, the
+ * variables, measure functions and act functions are clearly defined.
+ */
 class FeedbackController {
 public:
 	virtual void measure(pros::Controller *controller){};
