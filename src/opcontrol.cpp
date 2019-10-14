@@ -93,6 +93,25 @@ public:
 	}
 };
 
+class AutoBackupController: public FeedbackController {
+public:
+	bool button_state;
+
+	void measure(pros::Controller *controller){
+		this->button_state = controller->get_digital(DIGITAL_DOWN);
+	}
+
+	void act(RobotDeviceInterfaces* robot){
+		if(this->button_state){
+			robot->left_roller_motor->move_velocity(50);
+			robot->right_roller_motor->move_velocity(50);
+
+			robot->left_drive_motor->move_velocity(-50);
+			robot->right_drive_motor->move_velocity(-50);
+		}
+	}
+};
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -121,6 +140,7 @@ void opcontrol(){
 		new ArmController(),
 		// new LCDController(),
 		new TrayController(),
+		new AutoBackupController(),
 	};
 
 	while (true) {
