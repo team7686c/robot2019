@@ -22,6 +22,7 @@ public:
 	virtual void move_distance(double distance){};
 };
 
+
 // In future, add an AbsoluteAngularMotorSystem interface with a move_to_angle
 // function and an AbsoluteLinearMotorSystem interface with a move_to_distance
 // function. This is a more advanced extension of MotorSystems that isn't a top
