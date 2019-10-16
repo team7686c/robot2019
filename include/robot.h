@@ -9,17 +9,23 @@ extern "C" {
 
 class MotorSystem {
 public:
-	virtual void move_velocity(double velocity){};
+	virtual void move_velocity(double velocity){
+		std::cout << "Motor System virtual\n";
+	};
 };
 
 class AngularMotorSystem: public MotorSystem {
 public:
-	virtual void move_angle(double angle){};
+	virtual void move_angle(double angle){
+		std::cout << "Angular Motor System virtual\n";
+	};
 };
 
 class LinearMotorSystem: public MotorSystem {
 public:
-	virtual void move_distance(double distance){};
+	virtual void move_distance(double distance){
+		std::cout << "Linear Motor System virtual\n";
+	};
 };
 
 // In future, add an AbsoluteAngularMotorSystem interface with a move_to_angle
@@ -29,12 +35,6 @@ public:
 
 
 // Implementation classes:
-class WheelMotorSystem: public LinearMotorSystem {
-public:
-	pros::Motor *motor;
-	double diameter;
-};
-
 
 
 class RobotDeviceInterfaces {
