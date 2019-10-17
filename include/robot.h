@@ -35,7 +35,9 @@ public:
 
 
 // Implementation classes:
-
+class WheelMotorSystem;
+class RollerMotorSystem;
+class TrayMotorSystem;
 
 class RobotDeviceInterfaces {
 private:
