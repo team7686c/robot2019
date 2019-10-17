@@ -1,25 +1,26 @@
 #include "main.h"
 #include <vector>
 
-/*
- * This class is an interface for the feedback control loop in the main
- * operator control function. The class splits up the measure phase (reading
- * controller input) and the act phase (setting motor speeds) so that the robot
- * control loop code can be clearly separated. In those classes, the variables,
- * measure functions and act functions are clearly defined.
- */
+// This class is an interface for the feedback control loop in the main
+// operator control function. The class splits up the measure phase (reading
+// controller input) and the act phase (setting motor speeds) so that the robot
+// control loop code can be clearly separated. In those classes, the variables,
+// measure functions and act functions are clearly defined.
 class FeedbackController {
 public:
+	// The measure function is used to store controller state in a member variable
 	virtual void measure(pros::Controller *controller){};
+	
+	// The act function is used to change the state of the motors based on the member variable
 	virtual void act(RobotDeviceInterfaces *robot){};
 };
 
 class DrivetrainController: public FeedbackController {
 public:
-	int left_drive_speed;
-	int right_drive_speed;
+	int left_drive_speed, right_drive_speed; // in RPM
 
 	void measure(pros::Controller *controller){
+		// Analog Joystick input come in an integer in the range -127..127. The top motor speed desired is 200rpm.
 		this->left_drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
 		this->right_drive_speed = controller->get_analog(ANALOG_RIGHT_Y) * 200 / 128;
 	}
@@ -32,9 +33,11 @@ public:
 
 class RollerController: public FeedbackController {
 public:
-	int roller_speed;
+	int roller_speed; // in RPM
 
 	void measure(pros::Controller *controller){
+		// When R2 is pressed, the roller will spin forwards, and when R1 is pressed the roller will spin backwards.
+		// The speed is set to 100rpm
 		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
 	}
 
@@ -46,7 +49,7 @@ public:
 
 class ArmController: public FeedbackController {
 public:
-	int arm_speed;
+	int arm_speed; // in RPM
 
 	void measure(pros::Controller *controller){
 		this->arm_speed = (controller->get_digital(DIGITAL_L1) - controller->get_digital(DIGITAL_L2)) * 50;
@@ -57,6 +60,7 @@ public:
 	}
 };
 
+// The LCDController is currently unused because we were unable to make the controller API work.
 class LCDController: public FeedbackController {
 public:
 	int time;
@@ -80,6 +84,9 @@ public:
 	}
 };
 
+// The TrayController controls the cube intake tray, eventually this controller will be replaced
+// by a controller that takes advantage of the motor encoders to automatically move to the correct
+// position (upright or back).
 class TrayController: public FeedbackController {
 public:
 	int tray_velocity;
@@ -93,6 +100,10 @@ public:
 	}
 };
 
+// The AutoBackupController is meant to be used when placing a stack of cubes inside the scoring zone.
+// After the tray is tilted forwards, we found that it was hard to back away from the stack while making
+// sure it is also properly freed from the rollers. We found that this was best done by slowly backing up
+// while spinning the rollers at the same rate. 
 class AutoBackupController: public FeedbackController {
 public:
 	bool button_state;
@@ -112,6 +123,10 @@ public:
 	}
 };
 
+// The controller poll rate determines how long the controller will wait between iterations
+// of the control loop.
+const int CONTROLLER_POLL_RATE = 1000 / 30;
+
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -125,20 +140,18 @@ public:
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-
-const int CONTROLLER_POLL_RATE = 1000 / 30;
-
 void opcontrol(){
 	std::cout << "Driver control\n";
 
+	// Grab the global state pointers
 	RobotDeviceInterfaces *robot = global_robot;
 	pros::Controller *controller = global_controller;
 
+	// Collect the FeedbackController implementations into a vector for iteration
 	std::vector<FeedbackController*> feedbackControllers = {
 		new DrivetrainController(),
 		new RollerController(),
 		new ArmController(),
-		// new LCDController(),
 		new TrayController(),
 		new AutoBackupController(),
 	};
