@@ -12,24 +12,28 @@
  * from where it left off.
  */
 void autonomous() {
-    std::cout << "Autonomous 6\n";
+    std::cout << "Autonomous start\n";
 
     RobotDeviceInterfaces *robot = global_robot;
 
+    // Move the arm up
     robot->arm_motor->move_velocity(50);
     pros::delay(1500);
     robot->arm_motor->move_velocity(0);
 
+    // Run the rollers for one second
     robot->left_roller_motor->move_velocity(100);
     robot->right_roller_motor->move_velocity(100);
     pros::delay(1000);
     robot->left_roller_motor->move_velocity(0);
     robot->right_roller_motor->move_velocity(0);
 
+    // Move the arm back down
     robot->arm_motor->move_velocity(-50);
     pros::delay(1500);
     robot->arm_motor->move_velocity(0);
 
+    // Drive forward and backward, twice, to ensure that the rollers are down
     for(int i = 0; i < 2; i++){
         robot->left_drive_motor->move_velocity(150);
         robot->right_drive_motor->move_velocity(150);
@@ -39,8 +43,9 @@ void autonomous() {
         pros::delay(500);
     }
 
+    // Stop the drive
     robot->left_drive_motor->move_velocity(0);
     robot->right_drive_motor->move_velocity(0);
 
-    std::cout << "Autonomous done\n";
+    std::cout << "Autonomous finish\n";
 }
