@@ -23,8 +23,6 @@ public:
 		// Analog Joystick input come in an integer in the range -127..127. The top motor speed desired is 200rpm.
 		this->drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
 		this->turn_speed = controller->get_analog(ANALOG_LEFT_X) * 200 / 128;
-
-		std::cout << std::to_string(this->turn_speed) << "\n";
 	}
 
 	void act(RobotDeviceInterfaces *robot){
