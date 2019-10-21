@@ -10,9 +10,10 @@ pros::Controller *global_controller;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	std::cout << "Initilize\n";
+	std::cout << "Initialize\n";
 	global_robot = new RobotDeviceInterfaces();
 	global_controller = new pros::Controller(CONTROLLER_MASTER);
+	std::cout << "Initialization Finished\n";
 }
 
 /**
