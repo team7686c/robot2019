@@ -17,6 +17,7 @@ public:
 class AngularMotorSystem: public MotorSystem {
 public:
 	virtual void move_angle(double angle){
+		// Angle should be in rotations, positive for clockwise, negative for counter-clockwise.
 		std::cout << "Angular Motor System virtual\n";
 	};
 };
@@ -24,6 +25,7 @@ public:
 class LinearMotorSystem: public MotorSystem {
 public:
 	virtual void move_distance(double distance){
+		// Distance should be in inches.
 		std::cout << "Linear Motor System virtual\n";
 	};
 };
@@ -36,6 +38,8 @@ public:
 
 // Implementation classes:
 class WheelMotorSystem;
+class TurnDriveMotorSystem;
+class StraightDriveMotorSystem;
 class RollerMotorSystem;
 class TrayMotorSystem;
 
@@ -50,6 +54,8 @@ private:
 
 public:
 	LinearMotorSystem *left_drive, *right_drive;
+	LinearMotorSystem *straight_drive;
+	AngularMotorSystem *turn_drive;
 	AngularMotorSystem *tray;
 	AngularMotorSystem *arm;
 	LinearMotorSystem *roller;

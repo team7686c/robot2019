@@ -1,28 +1,6 @@
 #include "main.h"
 #include <math.h>
 
-/*
-class RobotDeviceInterfaces {
-private:
-	pros::Motor *left_drive_motor;
-	pros::Motor *right_drive_motor;
-	pros::Motor *arm_motor;
-	pros::Motor *tray_motor;
-	pros::Motor *left_roller_motor;
-	pros::Motor *right_roller_motor;
-
-public:
-	LinearMotorSystem *left_drive, *right_drive;
-	AngularMotorSystem *tray;
-	AngularMotorSystem *arm;
-	LinearMotorSystem *roller;
-
-	pros::Controller *controller;
-
-    RobotDeviceInterfaces();
-};
-*/
-
 class WheelMotorSystem: public LinearMotorSystem {
 private:
     pros::Motor *motor;
@@ -40,6 +18,51 @@ public:
     WheelMotorSystem(pros::Motor *motor, double diameter) {
         this->motor = motor;
         this->diameter = diameter;
+    }
+};
+
+class TurnDriveMotorSystem: public AngularMotorSystem {
+private:
+    LinearMotorSystem *left_drive, *right_drive;
+    double inter_wheel_distance; // in inches
+
+public:
+    void move_velocity(double velocity){
+        this->left_drive->move_velocity(velocity);
+        this->right_drive->move_velocity(-velocity);
+    }
+
+    void move_angle(double angle){
+        // Angle should be in rotations positive for clockwise, negative for counter-clockwise
+        this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle);
+        this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle);
+    }
+
+    TurnDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive, double inter_wheel_distance){
+        this->left_drive = left_drive;
+        this->right_drive = right_drive;
+        this->inter_wheel_distance = inter_wheel_distance;
+    }
+};
+
+class StraightDriveMotorSystem: public LinearMotorSystem {
+private:
+    LinearMotorSystem *left_drive, *right_drive;
+
+public:
+    void move_velocity(double velocity){
+        this->left_drive->move_velocity(velocity);
+        this->right_drive->move_velocity(velocity);
+    }
+
+    void move_distance(double distance){
+        this->left_drive->move_distance(distance);
+        this->right_drive->move_distance(distance);
+    }
+
+    StraightDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive){
+        this->left_drive = left_drive;
+        this->right_drive = right_drive;
     }
 };
 
@@ -92,7 +115,7 @@ public:
     };
 
     void move_angle(double angle){
-        this->motor->move_relative(angle, 100);
+        this->motor->move_relative(angle * 7, 100);
     }
 
     ArmMotorSystem(pros::Motor *motor){
@@ -111,6 +134,9 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
 
     this->left_drive = new WheelMotorSystem(this->left_drive_motor, 3.25);
     this->right_drive = new WheelMotorSystem(this->right_drive_motor, 3.25);
+    this->straight_drive = new StraightDriveMotorSystem(this->left_drive, this->right_drive);
+    this->turn_drive = new TurnDriveMotorSystem(this->left_drive, this->right_drive, 10.125);
+
     this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor);
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->arm_motor);
