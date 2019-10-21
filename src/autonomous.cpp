@@ -30,22 +30,29 @@ void autonomous() {
 
     // Move the arm back down
     robot->arm_motor->move_velocity(-50);
-    pros::delay(1500);
+    pros::delay(500);
     robot->arm_motor->move_velocity(0);
 
+    // Start the rollers
+    robot->left_roller_motor->move_velocity(100);
+    robot->right_roller_motor->move_velocity(100);
+
     // Drive forward and backward, twice, to ensure that the rollers are down
-    for(int i = 0; i < 2; i++){
-        robot->left_drive_motor->move_velocity(150);
-        robot->right_drive_motor->move_velocity(150);
-        pros::delay(500);
-        robot->left_drive_motor->move_velocity(-150);
-        robot->right_drive_motor->move_velocity(-150);
-        pros::delay(500);
+    for(int i = 0; i < 1; i++){
+        robot->left_drive_motor->move_velocity(100);
+        robot->right_drive_motor->move_velocity(100);
+        pros::delay(1000);
+        robot->left_drive_motor->move_velocity(-100);
+        robot->right_drive_motor->move_velocity(-100);
+        pros::delay(1000);
     }
 
     // Stop the drive
     robot->left_drive_motor->move_velocity(0);
     robot->right_drive_motor->move_velocity(0);
+
+    robot->left_roller_motor->move_velocity(0);
+    robot->right_roller_motor->move_velocity(0);
 
     std::cout << "Autonomous finish\n";
 }
