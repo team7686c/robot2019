@@ -26,8 +26,8 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces *robot){
-		robot->left_drive_motor->move_velocity(this->drive_speed + this->turn_speed);
-		robot->right_drive_motor->move_velocity(this->drive_speed - this->turn_speed);
+		robot->left_drive->move_velocity(this->drive_speed + this->turn_speed);
+		robot->right_drive->move_velocity(this->drive_speed - this->turn_speed);
 	}
 };
 
@@ -42,8 +42,7 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces* robot){
-		robot->left_roller_motor->move_velocity(this->roller_speed);
-		robot->right_roller_motor->move_velocity(this->roller_speed);
+		robot->roller->move_velocity(this->roller_speed);
 	}
 };
 
@@ -56,7 +55,7 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces *robot){
-		robot->arm_motor->move_velocity(this->arm_speed);
+		robot->arm->move_velocity(this->arm_speed);
 	}
 };
 
@@ -96,7 +95,7 @@ public:
 	}
 
 	void act(RobotDeviceInterfaces* robot){
-		robot->tray_motor->move_velocity(this->tray_velocity);
+		robot->tray->move_velocity(this->tray_velocity);
 	}
 };
 
@@ -114,11 +113,10 @@ public:
 
 	void act(RobotDeviceInterfaces* robot){
 		if(this->button_state){
-			robot->left_roller_motor->move_velocity(50);
-			robot->right_roller_motor->move_velocity(50);
+			robot->roller->move_velocity(50);
 
-			robot->left_drive_motor->move_velocity(-50);
-			robot->right_drive_motor->move_velocity(-50);
+			robot->left_drive->move_velocity(-50);
+			robot->right_drive->move_velocity(-50);
 		}
 	}
 };
