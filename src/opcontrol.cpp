@@ -8,10 +8,12 @@
 // measure functions and act functions are clearly defined.
 class FeedbackController {
 public:
-	// The measure function is used to store controller state in a member variable
+	// The measure function is used to store controller state in a member
+	// variable
 	virtual void measure(pros::Controller *controller){};
 
-	// The act function is used to change the state of the motors based on the member variable
+	// The act function is used to change the state of the motors based on the
+	// member variable
 	virtual void act(RobotDeviceInterfaces *robot){};
 };
 
@@ -20,12 +22,16 @@ public:
 	int drive_speed, turn_speed; // in RPM
 
 	void measure(pros::Controller *controller){
-		// Analog Joystick input come in an integer in the range -127..127. The top motor speed desired is 200rpm.
+		// Analog Joystick input come in an integer in the range -127..127. The
+		// top motor speed desired is 200rpm.
 		this->drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
 		this->turn_speed = controller->get_analog(ANALOG_LEFT_X) * 200 / 128;
 	}
 
 	void act(RobotDeviceInterfaces *robot){
+		// left_drive and right_drive are used individually so both controls can
+		// be used at the same time.
+
 		robot->left_drive->move_velocity(this->drive_speed + this->turn_speed);
 		robot->right_drive->move_velocity(this->drive_speed - this->turn_speed);
 	}
@@ -36,8 +42,8 @@ public:
 	int roller_speed; // in RPM
 
 	void measure(pros::Controller *controller){
-		// When R2 is pressed, the roller will spin forwards, and when R1 is pressed the roller will spin backwards.
-		// The speed is set to 100rpm
+		// When R2 is pressed, the roller will spin forwards, and when R1 is
+		// pressed the roller will spin backwards. The speed is set to 100rpm
 		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
 	}
 
@@ -59,7 +65,8 @@ public:
 	}
 };
 
-// The LCDController is currently unused because we were unable to make the controller API work.
+// The LCDController is currently unused because we were unable to make the
+// controller API work.
 class LCDController: public FeedbackController {
 public:
 	int time;
@@ -83,9 +90,9 @@ public:
 	}
 };
 
-// The TrayController controls the cube intake tray, eventually this controller will be replaced
-// by a controller that takes advantage of the motor encoders to automatically move to the correct
-// position (upright or back).
+// The TrayController controls the cube intake tray, eventually this controller
+// will be replaced by a controller that takes advantage of the motor encoders
+// to automatically move to the correct position (upright or back).
 class TrayController: public FeedbackController {
 public:
 	int tray_velocity;
@@ -99,9 +106,10 @@ public:
 	}
 };
 
-// The AutoBackupController is meant to be used when placing a stack of cubes inside the scoring zone.
-// After the tray is tilted forwards, we found that it was hard to back away from the stack while making
-// sure it is also properly freed from the rollers. We found that this was best done by slowly backing up
+// The AutoBackupController is meant to be used when placing a stack of cubes
+// inside the scoring zone. After the tray is tilted forwards, we found that it
+// was hard to back away from the stack while making sure it is also properly
+// freed from the rollers. We found that this was best done by slowly backing up
 // while spinning the rollers at the same rate.
 class AutoBackupController: public FeedbackController {
 public:
@@ -121,8 +129,8 @@ public:
 	}
 };
 
-// The controller poll rate determines how long the controller will wait between iterations
-// of the control loop.
+// The controller poll rate determines how long the controller will wait between
+// iterations of the control loop.
 const int CONTROLLER_POLL_RATE = 1000 / 30;
 
 /**
@@ -145,7 +153,8 @@ void opcontrol(){
 	RobotDeviceInterfaces *robot = global_robot;
 	pros::Controller *controller = global_controller;
 
-	// Collect the FeedbackController implementations into a vector for iteration
+	// Collect the FeedbackController implementations into a vector for
+	// iteration
 	std::vector<FeedbackController*> feedbackControllers = {
 		new DrivetrainController(),
 		new RollerController(),
