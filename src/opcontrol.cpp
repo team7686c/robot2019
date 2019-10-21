@@ -10,24 +10,26 @@ class FeedbackController {
 public:
 	// The measure function is used to store controller state in a member variable
 	virtual void measure(pros::Controller *controller){};
-	
+
 	// The act function is used to change the state of the motors based on the member variable
 	virtual void act(RobotDeviceInterfaces *robot){};
 };
 
 class DrivetrainController: public FeedbackController {
 public:
-	int left_drive_speed, right_drive_speed; // in RPM
+	int drive_speed, turn_speed; // in RPM
 
 	void measure(pros::Controller *controller){
 		// Analog Joystick input come in an integer in the range -127..127. The top motor speed desired is 200rpm.
-		this->left_drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
-		this->right_drive_speed = controller->get_analog(ANALOG_RIGHT_Y) * 200 / 128;
+		this->drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
+		this->turn_speed = controller->get_analog(ANALOG_LEFT_X) * 200 / 128;
+
+		std::cout << std::to_string(this->turn_speed) << "\n";
 	}
 
 	void act(RobotDeviceInterfaces *robot){
-		robot->left_drive_motor->move_velocity(this->left_drive_speed);
-		robot->right_drive_motor->move_velocity(this->right_drive_speed);
+		robot->left_drive_motor->move_velocity(this->drive_speed + this->turn_speed);
+		robot->right_drive_motor->move_velocity(this->drive_speed - this->turn_speed);
 	}
 };
 
@@ -103,7 +105,7 @@ public:
 // The AutoBackupController is meant to be used when placing a stack of cubes inside the scoring zone.
 // After the tray is tilted forwards, we found that it was hard to back away from the stack while making
 // sure it is also properly freed from the rollers. We found that this was best done by slowly backing up
-// while spinning the rollers at the same rate. 
+// while spinning the rollers at the same rate.
 class AutoBackupController: public FeedbackController {
 public:
 	bool button_state;
