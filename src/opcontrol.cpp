@@ -32,7 +32,7 @@ public:
 		// Analog Joystick input come in an integer in the range -127..127. The
 		// top motor speed desired is 200rpm.
 		double drive_input = controller->get_analog(ANALOG_LEFT_Y) / 128.0;
-		double turn_input = controller->get_analog(ANALOG_LEFT_X) / 128.0;
+		double turn_input = controller->get_analog(ANALOG_RIGHT_X) / 128.0;
 
 		this->drive_speed = cubic_control(drive_input) * BASE_DRIVE_SPEED;
 		this->turn_speed = cubic_control(turn_input) * BASE_TURN_SPEED;
