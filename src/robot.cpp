@@ -115,7 +115,7 @@ public:
     };
 
     void move_angle(double angle){
-        this->motor->move_relative(angle * 7, 100);
+        this->motor->move_relative(angle * 7, 50);
     }
 
     ArmMotorSystem(pros::Motor *motor){

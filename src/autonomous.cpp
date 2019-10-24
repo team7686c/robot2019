@@ -17,42 +17,30 @@ void autonomous() {
     RobotDeviceInterfaces *robot = global_robot;
 
     // Move the arm up
-    robot->arm_motor->move_velocity(50);
-    pros::delay(1500);
-    robot->arm_motor->move_velocity(0);
+    robot->arm->move_angle(0.2);
+    pros::delay(1000);
 
     // Run the rollers for one second
-    robot->left_roller_motor->move_velocity(100);
-    robot->right_roller_motor->move_velocity(100);
+    robot->roller->move_velocity(100);
     pros::delay(1000);
-    robot->left_roller_motor->move_velocity(0);
-    robot->right_roller_motor->move_velocity(0);
+    robot->roller->move_velocity(0);
 
     // Move the arm back down
-    robot->arm_motor->move_velocity(-50);
+    robot->arm->move_angle(-0.05);
     pros::delay(500);
-    robot->arm_motor->move_velocity(0);
 
     // Start the rollers
-    robot->left_roller_motor->move_velocity(100);
-    robot->right_roller_motor->move_velocity(100);
+    robot->roller->move_velocity(100);
 
-    // Drive forward and backward, twice, to ensure that the rollers are down
-    for(int i = 0; i < 1; i++){
-        robot->left_drive_motor->move_velocity(100);
-        robot->right_drive_motor->move_velocity(100);
-        pros::delay(1000);
-        robot->left_drive_motor->move_velocity(-100);
-        robot->right_drive_motor->move_velocity(-100);
-        pros::delay(1000);
-    }
 
-    // Stop the drive
-    robot->left_drive_motor->move_velocity(0);
-    robot->right_drive_motor->move_velocity(0);
+    // Drive forward then backward to push the cube into the goal zone
+    robot->straight_drive->move_distance(12);
+    pros::delay(1000);
+    robot->straight_drive->move_distance(-12);
 
-    robot->left_roller_motor->move_velocity(0);
-    robot->right_roller_motor->move_velocity(0);
+    // Stop the rollers
+    robot->roller->move_velocity(0);
+
 
     std::cout << "Autonomous finish\n";
 }
