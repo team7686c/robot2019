@@ -17,15 +17,25 @@ public:
 	virtual void act(RobotDeviceInterfaces *robot){};
 };
 
+float cubic_control(float input){
+	return input * input * input;
+}
+
 class DrivetrainController: public FeedbackController {
 public:
 	int drive_speed, turn_speed; // in RPM
 
+	const int BASE_DRIVE_SPEED = 150;
+	const int BASE_TURN_SPEED = 150;
+
 	void measure(pros::Controller *controller){
 		// Analog Joystick input come in an integer in the range -127..127. The
 		// top motor speed desired is 200rpm.
-		this->drive_speed = controller->get_analog(ANALOG_LEFT_Y) * 200 / 128;
-		this->turn_speed = controller->get_analog(ANALOG_LEFT_X) * 200 / 128;
+		double drive_input = controller->get_analog(ANALOG_LEFT_Y) / 128.0;
+		double turn_input = controller->get_analog(ANALOG_LEFT_X) / 128.0;
+
+		this->drive_speed = cubic_control(drive_input) * BASE_DRIVE_SPEED;
+		this->turn_speed = cubic_control(turn_input) * BASE_TURN_SPEED;
 	}
 
 	void act(RobotDeviceInterfaces *robot){
@@ -44,7 +54,7 @@ public:
 	void measure(pros::Controller *controller){
 		// When R2 is pressed, the roller will spin forwards, and when R1 is
 		// pressed the roller will spin backwards. The speed is set to 100rpm
-		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
+		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 75;
 	}
 
 	void act(RobotDeviceInterfaces* robot){
