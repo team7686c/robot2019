@@ -25,8 +25,8 @@ class DrivetrainController: public FeedbackController {
 public:
 	int drive_speed, turn_speed; // in RPM
 
-	const int BASE_DRIVE_SPEED = 150;
-	const int BASE_TURN_SPEED = 150;
+	const int BASE_DRIVE_SPEED = 200;
+	const int BASE_TURN_SPEED = 200;
 
 	void measure(pros::Controller *controller){
 		// Analog Joystick input come in an integer in the range -127..127. The
@@ -54,7 +54,7 @@ public:
 	void measure(pros::Controller *controller){
 		// When R2 is pressed, the roller will spin forwards, and when R1 is
 		// pressed the roller will spin backwards. The speed is set to 100rpm
-		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 75;
+		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
 	}
 
 	void act(RobotDeviceInterfaces* robot){
