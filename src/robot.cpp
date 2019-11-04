@@ -81,22 +81,24 @@ public:
 
 class RollerMotorSystem: public LinearMotorSystem {
 private:
-    pros::Motor *left_motor, *right_motor;
+    LinearMotorSystem *left_roller, *right_roller;
+    double roller_radius;
 
 public:
     void move_velocity(double velocity){
-        this->left_motor->move_velocity(velocity);
-        this->right_motor->move_velocity(velocity);
+        this->left_roller->move_velocity(velocity);
+        this->right_roller->move_velocity(velocity);
     }
 
     void move_distance(double distance, bool block){
-        // TODO: Implement this with the diameter being the distance between
-        // sides of the roller belt.
+        this->left_roller->move_distance(distance, false);
+        this->right_roller->move_distance(distance, block);
     }
 
-    RollerMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor) {
-        this->left_motor = left_motor;
-        this->right_motor = right_motor;
+    RollerMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor, double roller_radius) {
+        this->left_roller = new WheelMotorSystem(left_motor, roller_radius * 2);
+        this->right_roller = new WheelMotorSystem(right_motor, roller_radius * 2);
+        this->roller_radius = roller_radius;
     }
 };
 
@@ -165,7 +167,7 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->straight_drive = new StraightDriveMotorSystem(this->left_drive, this->right_drive);
     this->turn_drive = new TurnDriveMotorSystem(this->left_drive, this->right_drive, 10.125);
 
-    this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor);
+    this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor, 1.875);
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->arm_motor);
 }
