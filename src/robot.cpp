@@ -130,7 +130,7 @@ private:
 public:
     void move_velocity(double velocity){
         this->motor->move_velocity(velocity);
-    };
+    }
 
     void move_angle(double angle, bool block){
         auto target_angle = angle * 7;
