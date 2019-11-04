@@ -16,7 +16,7 @@ public:
 
 class AngularMotorSystem: public MotorSystem {
 public:
-	virtual void move_angle(double angle){
+	virtual void move_angle(double angle, bool block){
 		// Angle should be in rotations, positive for clockwise, negative for counter-clockwise.
 		std::cout << "Angular Motor System virtual\n";
 	};
@@ -24,7 +24,7 @@ public:
 
 class LinearMotorSystem: public MotorSystem {
 public:
-	virtual void move_distance(double distance){
+	virtual void move_distance(double distance, bool block){
 		// Distance should be in inches.
 		std::cout << "Linear Motor System virtual\n";
 	};

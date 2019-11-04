@@ -1,6 +1,14 @@
 #include "main.h"
 #include <math.h>
 
+void block_to_position(pros::Motor *motor, double target_position){
+    const double target_size = 0.05;
+
+    while(!( (motor->get_position() < target_position + target_size) && (motor->get_position() > target_position - target_size) )){
+        pros::delay(2);
+    }
+}
+
 class WheelMotorSystem: public LinearMotorSystem {
 private:
     pros::Motor *motor;
@@ -11,8 +19,13 @@ public:
         this->motor->move_velocity(velocity);
     }
 
-    void move_distance(double distance){
-        this->motor->move_relative(distance / (diameter * M_PI), 100);
+    void move_distance(double distance, bool block){
+        auto target_distance = distance / (diameter * M_PI);
+        this->motor->move_relative(target_distance, 100);
+
+        if(block){
+            block_to_position(this->motor, this->motor->get_position() + target_distance);
+        }
     }
 
     WheelMotorSystem(pros::Motor *motor, double diameter) {
@@ -32,10 +45,10 @@ public:
         this->right_drive->move_velocity(-velocity);
     }
 
-    void move_angle(double angle){
+    void move_angle(double angle, bool block){
         // Angle should be in rotations positive for clockwise, negative for counter-clockwise
-        this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle);
-        this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle);
+        this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle, false);
+        this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle, block);
     }
 
     TurnDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive, double inter_wheel_distance){
@@ -55,9 +68,9 @@ public:
         this->right_drive->move_velocity(velocity);
     }
 
-    void move_distance(double distance){
-        this->left_drive->move_distance(distance);
-        this->right_drive->move_distance(distance);
+    void move_distance(double distance, bool block){
+        this->left_drive->move_distance(distance, false);
+        this->right_drive->move_distance(distance, block);
     }
 
     StraightDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive){
@@ -76,7 +89,7 @@ public:
         this->right_motor->move_velocity(velocity);
     }
 
-    void move_distance(double distance){
+    void move_distance(double distance, bool block){
         // TODO: Implement this with the diameter being the distance between
         // sides of the roller belt.
     }
@@ -96,8 +109,13 @@ public:
         this->motor->move_velocity(velocity);
     }
 
-    void move_angle(double angle){
-        this->motor->move_relative(angle, 50);
+    void move_angle(double angle, bool block){
+        double target_angle = angle;
+        this->motor->move_relative(target_angle, 50);
+
+        if(block) {
+            block_to_position(this->motor, this->motor->get_position() + target_angle);
+        }
     }
 
     TrayMotorSystem(pros::Motor *motor){
@@ -114,8 +132,14 @@ public:
         this->motor->move_velocity(velocity);
     };
 
-    void move_angle(double angle){
-        this->motor->move_relative(angle * 7, 50);
+    void move_angle(double angle, bool block){
+        auto target_angle = angle * 7;
+
+        this->motor->move_relative(target_angle, 50);
+
+        if(block) {
+            block_to_position(this->motor, this->motor->get_position() + target_angle);
+        }
     }
 
     ArmMotorSystem(pros::Motor *motor){

@@ -11,36 +11,34 @@
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
+
 void autonomous() {
     std::cout << "Autonomous start\n";
 
     RobotDeviceInterfaces *robot = global_robot;
 
-    // Move the arm up
-    robot->arm->move_angle(0.2);
-    pros::delay(1000);
-
-    // Run the rollers for one second
+    // Start the rollers running
     robot->roller->move_velocity(100);
+
+    // Move the arm up
+    robot->arm->move_angle(0.2, true);
+
+    // keep the rollers running for one second
     pros::delay(1000);
     robot->roller->move_velocity(0);
 
     // Move the arm back down
-    robot->arm->move_angle(-0.05);
-    pros::delay(500);
+    robot->arm->move_angle(-0.05, true);
 
     // Start the rollers
     robot->roller->move_velocity(100);
 
-
     // Drive forward then backward to push the cube into the goal zone
-    robot->straight_drive->move_distance(12);
-    pros::delay(1000);
-    robot->straight_drive->move_distance(-12);
+    robot->straight_drive->move_distance(12, true);
+    robot->straight_drive->move_distance(-12, true);
 
     // Stop the rollers
     robot->roller->move_velocity(0);
-
 
     std::cout << "Autonomous finish\n";
 }
