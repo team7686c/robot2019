@@ -20,7 +20,7 @@ public:
     }
 
     void move_distance(double distance, bool block){
-        auto target_distance = distance / (diameter * M_PI);
+        double target_distance = distance / (diameter * M_PI);
         this->motor->move_relative(target_distance, 100);
 
         if(block){
@@ -133,7 +133,7 @@ public:
     }
 
     void move_angle(double angle, bool block){
-        auto target_angle = angle * 7;
+        double target_angle = angle * 7;
 
         this->motor->move_relative(target_angle, 50);
 
