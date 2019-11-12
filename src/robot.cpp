@@ -152,7 +152,7 @@ public:
     }
 
     BlockCommand *move_angle(double angle){
-        double target_angle = angle;
+        double target_angle = angle * 7;
         this->motor->move_relative(target_angle, 50);
 
         return new BlockCommand(this->motor, this->motor->get_position() + target_angle);
