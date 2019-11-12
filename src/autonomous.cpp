@@ -17,28 +17,22 @@ void autonomous() {
 
     RobotDeviceInterfaces *robot = global_robot;
 
-    // Start the rollers running
+    // Move the tray forward
+    robot->tray->move_angle(0.25)->block();
+
+    // Move the arms up then down
+    robot->arm->move_angle(0.1)->block();
+    robot->arm->move_angle(-0.1)->block();
+
+    // Run the roller
     robot->roller->move_velocity(100);
-
-    // Move the arm up
-    robot->arm->move_angle(0.2)->block();
-
-    // keep the rollers running for one second
     pros::delay(1000);
     robot->roller->move_velocity(0);
 
-    // Move the arm back down
-    robot->arm->move_angle(-0.05)->block();
+    // Move the tray back
+    robot->tray->move_angle(-0.25)->block();
 
-    // Start the rollers
-    robot->roller->move_velocity(100);
-
-    // Drive forward then backward to push the cube into the goal zone
-    robot->straight_drive->move_distance(12)->block();
-    robot->straight_drive->move_distance(-12)->block();
-
-    // Stop the rollers
-    robot->roller->move_velocity(0);
+    // Finished unfolding
 
     std::cout << "Autonomous finish\n";
 }
