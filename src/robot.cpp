@@ -1,5 +1,40 @@
 #include "main.h"
+#include <vector>
+#include <algorithm>
 #include <math.h>
+
+bool BlockCommand::check(){
+    const double TARGET_SIZE = 0.05;
+
+    auto pos = this->motor->get_position();
+    return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
+}
+
+BlockCommand::BlockCommand(pros::Motor* motor, double target_position){
+    this->motor = motor;
+    this->target_position = target_position;
+}
+
+void BlockCommand::block(){
+    while(!this->check()){
+        pros::delay(2);
+    }
+}
+
+class MultiBlockCommand: public BlockCommand {
+public:
+	std::vector<BlockCommand> commands;
+
+	bool check(){
+		return std::all_of(commands.begin(), commands.end(), [](BlockCommand command){
+	        return command.check();
+	    });
+	}
+
+	MultiBlockCommand(std::vector<BlockCommand> commands): BlockCommand(NULL, 0) {
+		this->commands = commands;
+	}
+};
 
 void block_to_position(pros::Motor *motor, double target_position){
     const double target_size = 0.05;
@@ -19,13 +54,11 @@ public:
         this->motor->move_velocity(velocity);
     }
 
-    void move_distance(double distance, bool block){
+    BlockCommand *move_distance(double distance){
         double target_distance = distance / (diameter * M_PI);
         this->motor->move_relative(target_distance, 100);
 
-        if(block){
-            block_to_position(this->motor, this->motor->get_position() + target_distance);
-        }
+        return new BlockCommand(this->motor, this->motor->get_position() + target_distance);
     }
 
     WheelMotorSystem(pros::Motor *motor, double diameter) {
@@ -45,10 +78,13 @@ public:
         this->right_drive->move_velocity(-velocity);
     }
 
-    void move_angle(double angle, bool block){
+    BlockCommand *move_angle(double angle){
         // Angle should be in rotations positive for clockwise, negative for counter-clockwise
-        this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle, false);
-        this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle, block);
+
+        return new MultiBlockCommand({
+            this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle),
+            this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle)
+        });
     }
 
     TurnDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive, double inter_wheel_distance){
@@ -68,9 +104,11 @@ public:
         this->right_drive->move_velocity(velocity);
     }
 
-    void move_distance(double distance, bool block){
-        this->left_drive->move_distance(distance, false);
-        this->right_drive->move_distance(distance, block);
+    BlockCommand *move_distance(double distance){
+        return new MultiBlockCommand({
+            this->left_drive->move_distance(distance),
+            this->right_drive->move_distance(distance)
+        });
     }
 
     StraightDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive){
@@ -90,9 +128,11 @@ public:
         this->right_roller->move_velocity(velocity);
     }
 
-    void move_distance(double distance, bool block){
-        this->left_roller->move_distance(distance, false);
-        this->right_roller->move_distance(distance, block);
+    BlockCommand *move_distance(double distance){
+        return new MultiBlockCommand({
+            this->left_roller->move_distance(distance),
+            this->right_roller->move_distance(distance)
+        });
     }
 
     RollerMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor, double roller_radius) {
@@ -111,13 +151,11 @@ public:
         this->motor->move_velocity(velocity);
     }
 
-    void move_angle(double angle, bool block){
+    BlockCommand *move_angle(double angle){
         double target_angle = angle;
         this->motor->move_relative(target_angle, 50);
 
-        if(block) {
-            block_to_position(this->motor, this->motor->get_position() + target_angle);
-        }
+        return new BlockCommand(this->motor, this->motor->get_position() + target_angle);
     }
 
     TrayMotorSystem(pros::Motor *motor){
@@ -134,14 +172,12 @@ public:
         this->motor->move_velocity(velocity);
     }
 
-    void move_angle(double angle, bool block){
+    BlockCommand *move_angle(double angle){
         double target_angle = angle * 7;
 
         this->motor->move_relative(target_angle, 50);
 
-        if(block) {
-            block_to_position(this->motor, this->motor->get_position() + target_angle);
-        }
+        return new BlockCommand(this->motor, this->motor->get_position() + target_angle);
     }
 
     ArmMotorSystem(pros::Motor *motor){

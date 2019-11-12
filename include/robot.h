@@ -7,27 +7,42 @@
 extern "C" {
 #endif
 
+class BlockCommand {
+public:
+	pros::Motor* motor;
+	double target_position;
+
+	virtual bool check();
+	BlockCommand(pros::Motor*, double);
+	void block();
+};
+
+class MultiBlockCommand;
+
+
 class MotorSystem {
 public:
 	virtual void move_velocity(double velocity){
 		std::cout << "Motor System virtual\n";
-	};
+	}
 };
 
 class AngularMotorSystem: public MotorSystem {
 public:
-	virtual void move_angle(double angle, bool block){
+	virtual BlockCommand *move_angle(double angle){
 		// Angle should be in rotations, positive for clockwise, negative for counter-clockwise.
 		std::cout << "Angular Motor System virtual\n";
-	};
+		return NULL;
+	}
 };
 
 class LinearMotorSystem: public MotorSystem {
 public:
-	virtual void move_distance(double distance, bool block){
+	virtual BlockCommand *move_distance(double distance){
 		// Distance should be in inches.
 		std::cout << "Linear Motor System virtual\n";
-	};
+		return NULL;
+	}
 };
 
 // In future, add an AbsoluteAngularMotorSystem interface with a move_to_angle

@@ -21,21 +21,21 @@ void autonomous() {
     robot->roller->move_velocity(100);
 
     // Move the arm up
-    robot->arm->move_angle(0.2, true);
+    robot->arm->move_angle(0.2)->block();
 
     // keep the rollers running for one second
     pros::delay(1000);
     robot->roller->move_velocity(0);
 
     // Move the arm back down
-    robot->arm->move_angle(-0.05, true);
+    robot->arm->move_angle(-0.05)->block();
 
     // Start the rollers
     robot->roller->move_velocity(100);
 
     // Drive forward then backward to push the cube into the goal zone
-    robot->straight_drive->move_distance(12, true);
-    robot->straight_drive->move_distance(-12, true);
+    robot->straight_drive->move_distance(12)->block();
+    robot->straight_drive->move_distance(-12)->block();
 
     // Stop the rollers
     robot->roller->move_velocity(0);
