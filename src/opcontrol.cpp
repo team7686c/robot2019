@@ -28,7 +28,7 @@ public:
 	const int BASE_DRIVE_SPEED = 200;
 	const int BASE_TURN_SPEED = 200;
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		// Analog Joystick input come in an integer in the range -127..127. The
 		// top motor speed desired is 200rpm.
 		double drive_input = controller->get_analog(ANALOG_LEFT_Y) / 128.0;
@@ -38,7 +38,7 @@ public:
 		this->turn_speed = cubic_control(turn_input) * BASE_TURN_SPEED;
 	}
 
-	void act(RobotDeviceInterfaces *robot){
+	void act(RobotDeviceInterfaces *robot) override {
 		// left_drive and right_drive are used individually so both controls can
 		// be used at the same time.
 
@@ -51,13 +51,13 @@ class RollerController: public FeedbackController {
 public:
 	int roller_speed; // in RPM
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		// When R2 is pressed, the roller will spin forwards, and when R1 is
 		// pressed the roller will spin backwards. The speed is set to 100rpm
 		this->roller_speed = (controller->get_digital(DIGITAL_R2) - controller->get_digital(DIGITAL_R1)) * 100;
 	}
 
-	void act(RobotDeviceInterfaces* robot){
+	void act(RobotDeviceInterfaces* robot) override {
 		robot->roller->move_velocity(this->roller_speed);
 	}
 };
@@ -66,11 +66,11 @@ class ArmController: public FeedbackController {
 public:
 	int arm_speed; // in RPM
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		this->arm_speed = (controller->get_digital(DIGITAL_L1) - controller->get_digital(DIGITAL_L2)) * 50;
 	}
 
-	void act(RobotDeviceInterfaces *robot){
+	void act(RobotDeviceInterfaces *robot) override {
 		robot->arm->move_velocity(this->arm_speed);
 	}
 };
@@ -82,11 +82,11 @@ public:
 	int time;
 	int count;
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		this->count++;
 	}
 
-	void act(RobotDeviceInterfaces *robot){
+	void act(RobotDeviceInterfaces *robot) override {
 		if(this->count % 10 == 0){
 			std::cout << "running controller feedback\n";
 			std::cout << "Clear result: " << std::to_string(robot->controller->clear_line(1)) << "\n";
@@ -107,11 +107,11 @@ class TrayController: public FeedbackController {
 public:
 	int tray_velocity;
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		this->tray_velocity = (controller->get_digital(DIGITAL_A) - controller->get_digital(DIGITAL_B)) * 50;
 	}
 
-	void act(RobotDeviceInterfaces* robot){
+	void act(RobotDeviceInterfaces* robot) override {
 		robot->tray->move_velocity(this->tray_velocity);
 	}
 };
@@ -125,11 +125,11 @@ class AutoBackupController: public FeedbackController {
 public:
 	bool button_state;
 
-	void measure(pros::Controller *controller){
+	void measure(pros::Controller *controller) override {
 		this->button_state = controller->get_digital(DIGITAL_DOWN);
 	}
 
-	void act(RobotDeviceInterfaces* robot){
+	void act(RobotDeviceInterfaces* robot) override {
 		if(this->button_state){
 			robot->roller->move_velocity(50);
 

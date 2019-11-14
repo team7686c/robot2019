@@ -25,7 +25,7 @@ class MultiBlockCommand: public BlockCommand {
 public:
 	std::vector<BlockCommand> commands;
 
-	bool check(){
+	bool check() override {
 		return std::all_of(commands.begin(), commands.end(), [](BlockCommand command){
 	        return command.check();
 	    });
@@ -50,11 +50,11 @@ private:
     double diameter;
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
-    BlockCommand *move_distance(double distance){
+    BlockCommand *move_distance(double distance) override {
         double target_distance = distance / (diameter * M_PI);
         this->motor->move_relative(target_distance, 100);
 
@@ -73,12 +73,12 @@ private:
     double inter_wheel_distance; // in inches
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->left_drive->move_velocity(velocity);
         this->right_drive->move_velocity(-velocity);
     }
 
-    BlockCommand *move_angle(double angle){
+    BlockCommand *move_angle(double angle) override {
         // Angle should be in rotations positive for clockwise, negative for counter-clockwise
 
         return new MultiBlockCommand({
@@ -99,12 +99,12 @@ private:
     LinearMotorSystem *left_drive, *right_drive;
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->left_drive->move_velocity(velocity);
         this->right_drive->move_velocity(velocity);
     }
 
-    BlockCommand *move_distance(double distance){
+    BlockCommand *move_distance(double distance) override {
         return new MultiBlockCommand({
             this->left_drive->move_distance(distance),
             this->right_drive->move_distance(distance)
@@ -123,12 +123,12 @@ private:
     double roller_radius;
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->left_roller->move_velocity(velocity);
         this->right_roller->move_velocity(velocity);
     }
 
-    BlockCommand *move_distance(double distance){
+    BlockCommand *move_distance(double distance) override {
         return new MultiBlockCommand({
             this->left_roller->move_distance(distance),
             this->right_roller->move_distance(distance)
@@ -147,11 +147,11 @@ private:
     pros::Motor *motor;
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
-    BlockCommand *move_angle(double angle){
+    BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
         this->motor->move_relative(target_angle, 50);
 
@@ -168,11 +168,11 @@ private:
     pros::Motor *motor;
 
 public:
-    void move_velocity(double velocity){
+    void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
-    BlockCommand *move_angle(double angle){
+    BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
 
         this->motor->move_relative(target_angle, 75);
