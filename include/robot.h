@@ -7,18 +7,7 @@
 extern "C" {
 #endif
 
-class BlockCommand {
-public:
-	pros::Motor* motor;
-	double target_position;
-
-	virtual bool check();
-	BlockCommand(pros::Motor*, double);
-	void block();
-};
-
-class MultiBlockCommand;
-
+#include "block.h"
 
 class MotorSystem {
 public:

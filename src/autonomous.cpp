@@ -27,12 +27,18 @@ void autonomous() {
     // Run the roller
     robot->roller->move_velocity(100);
     pros::delay(1000);
-    robot->roller->move_velocity(0);
 
     // Move the tray back
     robot->tray->move_angle(-0.25)->block();
 
+    robot->roller->move_velocity(0);
+
     // Finished unfolding
+
+
+    // Drive forward then backward to push a cube into the goal zone.
+    // robot->straight_drive->move_distance(12)->block();
+    // robot->straight_drive->move_distance(-12)->block();
 
     std::cout << "Autonomous finish\n";
 }

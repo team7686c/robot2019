@@ -64,6 +64,7 @@ extern "C" {
 #endif
 
 #include "robot.h"
+#include <vector>
 
 extern RobotDeviceInterfaces *global_robot;
 extern pros::Controller *global_controller;
