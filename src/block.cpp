@@ -1,4 +1,5 @@
 #include "block.h"
+#include <vector>
 #include <algorithm>
 
 MotorBlockCommand::MotorBlockCommand(pros::Motor* motor, double target_position){
