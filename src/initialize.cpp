@@ -32,6 +32,3 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {
-	std::cout << "Competition initilize\n";
-}

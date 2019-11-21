@@ -1,4 +1,99 @@
 #include "main.h"
+#include <tuple>
+#include <vector>
+
+// https://stackoverflow.com/a/1082938
+int eucmod(int x, int m){
+    return (x%m + m)%m;
+}
+
+const int default_autonomous_selection = 1;
+
+int autonomous_selection;
+std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
+    {"None", [](RobotDeviceInterfaces* robot){}},
+    {"1 point autonomous", [](RobotDeviceInterfaces *robot){
+        // Move the tray forward
+        robot->tray->move_angle(0.25)->block();
+
+        // Move the arms up then down
+        robot->arm->move_angle(0.1)->block();
+        robot->arm->move_angle(-0.1)->block();
+
+        // Start the roller
+        robot->roller->move_velocity(150);
+        pros::delay(1500);
+
+        // Move the tray back
+        robot->tray->move_angle(-0.25)->block();
+
+        // Stop the rollers
+
+        robot->roller->move_velocity(0);
+
+        // Finished unfolding
+
+        robot->arm->move_angle(0.15)->block();
+
+        // Drive forward then backward to push a cube into the goal zone.
+        robot->straight_drive->move_distance(12)->block();
+        robot->straight_drive->move_distance(-12)->block();
+    }},
+    {"Dumb auton program", [](RobotDeviceInterfaces *robot){
+
+        // Drive the robot forward
+        robot->straight_drive->move_distance(12)->block();
+
+    }},
+};
+
+void draw_unselect(int i){
+    pros::lcd::print(i + 1, "  %s", std::get<0>(autonomous_programs[i]));
+}
+
+void draw_select(int i){
+    pros::lcd::print(i + 1, "> %s", std::get<0>(autonomous_programs[i]));
+}
+
+void competition_initialize() {
+	std::cout << "Competition initilize\n";
+
+	pros::lcd::initialize();
+	pros::lcd::print(0, "Select autonomous:");
+
+    for(int i = 0; i < autonomous_programs.size(); i++){
+        draw_unselect(i);
+    }
+    autonomous_selection = default_autonomous_selection;
+    draw_select(autonomous_selection);
+
+    int button_state = 0;
+
+	while(true){
+        if(button_state == 0){
+            if(pros::lcd::read_buttons() & LCD_BTN_LEFT){
+                button_state = -1;
+            } else if(pros::lcd::read_buttons() & LCD_BTN_RIGHT){
+                button_state = 1;
+            } else {
+                button_state = 0;
+            }
+
+            if(button_state != 0){
+                draw_unselect(autonomous_selection);
+                autonomous_selection = eucmod(autonomous_selection + button_state, autonomous_programs.size());
+                draw_select(autonomous_selection);
+            }
+        } else {
+            if(pros::lcd::read_buttons() == 0){
+                button_state = 0;
+            }
+        }
+
+		pros::delay(10);
+	}
+
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -12,27 +107,14 @@
  * from where it left off.
  */
 
+
+
 void autonomous() {
     std::cout << "Autonomous start\n";
 
     RobotDeviceInterfaces *robot = global_robot;
 
-    // Move the tray forward
-    robot->tray->move_angle(0.25)->block();
-
-    // Move the arms up then down
-    robot->arm->move_angle(0.1)->block();
-    robot->arm->move_angle(-0.1)->block();
-
-    // Run the roller
-    robot->roller->move_velocity(100);
-    pros::delay(1000);
-    robot->roller->move_velocity(0);
-
-    // Move the tray back
-    robot->tray->move_angle(-0.25)->block();
-
-    // Finished unfolding
+    std::get<1>(autonomous_programs[autonomous_selection])(global_robot);
 
     std::cout << "Autonomous finish\n";
 }
