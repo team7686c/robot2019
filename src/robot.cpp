@@ -16,6 +16,8 @@ BlockCommand::BlockCommand(pros::Motor* motor, double target_position){
 }
 
 void BlockCommand::block(){
+    std::cout << "Block called";
+
     while(!this->check()){
         pros::delay(2);
     }
@@ -23,26 +25,17 @@ void BlockCommand::block(){
 
 class MultiBlockCommand: public BlockCommand {
 public:
-	std::vector<BlockCommand> commands;
+	BlockCommand *c1, *c2;
 
 	bool check() override {
-		return std::all_of(commands.begin(), commands.end(), [](BlockCommand command){
-	        return command.check();
-	    });
+		return c1->check() && c2->check();
 	}
 
-	MultiBlockCommand(std::vector<BlockCommand> commands): BlockCommand(NULL, 0) {
-		this->commands = commands;
+	MultiBlockCommand(BlockCommand* c1, BlockCommand* c2): BlockCommand(NULL, 0) {
+		this->c1 = c1;
+        this->c2 = c2;
 	}
 };
-
-void block_to_position(pros::Motor *motor, double target_position){
-    const double target_size = 0.05;
-
-    while(!( (motor->get_position() < target_position + target_size) && (motor->get_position() > target_position - target_size) )){
-        pros::delay(2);
-    }
-}
 
 class WheelMotorSystem: public LinearMotorSystem {
 private:
@@ -81,10 +74,10 @@ public:
     BlockCommand *move_angle(double angle) override {
         // Angle should be in rotations positive for clockwise, negative for counter-clockwise
 
-        return new MultiBlockCommand({
+        return new MultiBlockCommand(
             this->left_drive->move_distance(this->inter_wheel_distance * M_PI * angle),
             this->right_drive->move_distance(-this->inter_wheel_distance * M_PI * angle)
-        });
+        );
     }
 
     TurnDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive, double inter_wheel_distance){
@@ -105,10 +98,10 @@ public:
     }
 
     BlockCommand *move_distance(double distance) override {
-        return new MultiBlockCommand({
+        return new MultiBlockCommand(
             this->left_drive->move_distance(distance),
             this->right_drive->move_distance(distance)
-        });
+        );
     }
 
     StraightDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive){
@@ -129,10 +122,10 @@ public:
     }
 
     BlockCommand *move_distance(double distance) override {
-        return new MultiBlockCommand({
+        return new MultiBlockCommand(
             this->left_roller->move_distance(distance),
             this->right_roller->move_distance(distance)
-        });
+        );
     }
 
     RollerMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor, double roller_radius) {
