@@ -7,31 +7,34 @@ int eucmod(int x, int m){
     return (x%m + m)%m;
 }
 
+void unfold(RobotDeviceInterfaces *robot){
+    // Move the tray forward
+    robot->tray->move_angle(0.25)->block();
+
+    // Move the arms up then down
+    robot->arm->move_angle(0.1)->block();
+    robot->arm->move_angle(-0.1)->block();
+
+    // Start the roller
+    robot->roller->move_velocity(150);
+    pros::delay(1500);
+
+    // Move the tray back
+    robot->tray->move_angle(-0.25)->block();
+
+    // Stop the rollers
+    robot->roller->move_velocity(0);
+
+    // Finished unfolding
+}
+
 const int default_autonomous_selection = 1;
 
 int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
     {"None", [](RobotDeviceInterfaces* robot){}},
     {"1 point autonomous", [](RobotDeviceInterfaces *robot){
-        // Move the tray forward
-        robot->tray->move_angle(0.25)->block();
-
-        // Move the arms up then down
-        robot->arm->move_angle(0.1)->block();
-        robot->arm->move_angle(-0.1)->block();
-
-        // Start the roller
-        robot->roller->move_velocity(150);
-        pros::delay(1500);
-
-        // Move the tray back
-        robot->tray->move_angle(-0.25)->block();
-
-        // Stop the rollers
-
-        robot->roller->move_velocity(0);
-
-        // Finished unfolding
+        unfold(robot);
 
         robot->arm->move_angle(0.15)->block();
 
@@ -56,10 +59,11 @@ void draw_select(int i){
 }
 
 void competition_initialize() {
-	std::cout << "Competition initilize\n";
+	std::cout << "Competition initialize\n";
 
 	pros::lcd::initialize();
 	pros::lcd::print(0, "Select autonomous:");
+    pros::lcd::print(7, "   Up                                       Down   kjascdjknsa");
 
     for(int i = 0; i < autonomous_programs.size(); i++){
         draw_unselect(i);
@@ -106,8 +110,6 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-
-
 
 void autonomous() {
     std::cout << "Autonomous start\n";
