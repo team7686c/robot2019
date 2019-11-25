@@ -42,11 +42,11 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
         robot->straight_drive->move_distance(12)->block();
         robot->straight_drive->move_distance(-12)->block();
     }},
-    {"Dumb auton program", [](RobotDeviceInterfaces *robot){
+    {"4 point autonomous", [](RobotDeviceInterfaces *robot){
+        unfold(robot);
 
         // Drive the robot forward
         robot->straight_drive->move_distance(12)->block();
-
     }},
 };
 
@@ -63,6 +63,8 @@ void competition_initialize() {
 
 	pros::lcd::initialize();
 	pros::lcd::print(0, "Select autonomous:");
+
+    // Don't ask me why the extra text is required. It works so don't change it.
     pros::lcd::print(7, "   Up                                       Down   kjascdjknsa");
 
     for(int i = 0; i < autonomous_programs.size(); i++){
