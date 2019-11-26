@@ -34,13 +34,11 @@ int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
     {"None", [](RobotDeviceInterfaces* robot){}},
     {"1 point autonomous", [](RobotDeviceInterfaces *robot){
-        unfold(robot);
-
-        robot->arm->move_angle(0.15)->block();
-
         // Drive forward then backward to push a cube into the goal zone.
         robot->straight_drive->move_distance(12)->block();
         robot->straight_drive->move_distance(-12)->block();
+
+        unfold(robot);
     }},
     {"4 point autonomous", [](RobotDeviceInterfaces *robot){
         unfold(robot);
