@@ -22,27 +22,20 @@ class MultiBlockCommand;
 
 class MotorSystem {
 public:
-	virtual void move_velocity(double velocity){
-		std::cout << "Motor System virtual\n";
-	}
+	// Velocity in RPM
+	virtual void move_velocity(double velocity) = 0;
 };
 
 class AngularMotorSystem: public MotorSystem {
 public:
-	virtual BlockCommand *move_angle(double angle){
-		// Angle should be in rotations, positive for clockwise, negative for counter-clockwise.
-		std::cout << "Angular Motor System virtual\n";
-		return NULL;
-	}
+	// Angle should be in rotations
+	virtual BlockCommand *move_angle(double angle) = 0;
 };
 
 class LinearMotorSystem: public MotorSystem {
 public:
-	virtual BlockCommand *move_distance(double distance){
-		// Distance should be in inches.
-		std::cout << "Linear Motor System virtual\n";
-		return NULL;
-	}
+	// Distance should be in inches
+	virtual BlockCommand *move_distance(double distance) = 0;
 };
 
 // In future, add an AbsoluteAngularMotorSystem interface with a move_to_angle
