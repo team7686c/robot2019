@@ -43,9 +43,13 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
     {"4 point autonomous", [](RobotDeviceInterfaces *robot){
         unfold(robot);
 
-        // Drive the robot forward
-        robot->straight_drive->move_distance(12)->block();
+        robot->roller->move_velocity(100);
+        robot->straight_drive->move_distance(24);
+        robot->straight_drive->move_distance(-20);
     }},
+    {"right angle turn", [](RobotDeviceInterfaces *robot){
+        robot->turn_drive->move_angle(0.25);
+    }}
 };
 
 void draw_unselect(int i){
