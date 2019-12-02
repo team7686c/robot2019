@@ -3,35 +3,34 @@
 #include <algorithm>
 #include <math.h>
 
-bool BlockCommand::check(){
-    const double TARGET_SIZE = 0.05;
+class MotorBlockCommand: public BlockCommand {
+private:
+    pros::Motor* motor;
+    double target_position;
 
-    auto pos = this->motor->get_position();
-    return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
-}
+public:
+	virtual bool check() override {
+        const double TARGET_SIZE = 0.05;
 
-BlockCommand::BlockCommand(pros::Motor* motor, double target_position){
-    this->motor = motor;
-    this->target_position = target_position;
-}
-
-void BlockCommand::block(){
-    std::cout << "Block called";
-
-    while(!this->check()){
-        pros::delay(2);
+        auto pos = this->motor->get_position();
+        return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
     }
-}
+
+	MotorBlockCommand(pros::Motor *motor, double target_position){
+        this->motor = motor;
+        this->target_position = target_position;
+    }
+};
 
 class MultiBlockCommand: public BlockCommand {
 public:
 	BlockCommand *c1, *c2;
 
-	bool check() override {
+	virtual bool check() override {
 		return c1->check() && c2->check();
 	}
 
-	MultiBlockCommand(BlockCommand* c1, BlockCommand* c2): BlockCommand(NULL, 0) {
+	MultiBlockCommand(BlockCommand* c1, BlockCommand* c2){
 		this->c1 = c1;
         this->c2 = c2;
 	}
@@ -51,7 +50,7 @@ public:
         double target_distance = distance / (diameter * M_PI);
         this->motor->move_relative(target_distance, 100);
 
-        return new BlockCommand(this->motor, this->motor->get_position() + target_distance);
+        return new MotorBlockCommand(this->motor, this->motor->get_position() + target_distance);
     }
 
     WheelMotorSystem(pros::Motor *motor, double diameter) {
@@ -148,7 +147,7 @@ public:
         double target_angle = angle * 7;
         this->motor->move_relative(target_angle, 50);
 
-        return new BlockCommand(this->motor, this->motor->get_position() + target_angle);
+        return new MotorBlockCommand(this->motor, this->motor->get_position() + target_angle);
     }
 
     TrayMotorSystem(pros::Motor *motor){
@@ -170,7 +169,7 @@ public:
 
         this->motor->move_relative(target_angle, 75);
 
-        return new BlockCommand(this->motor, this->motor->get_position() + target_angle);
+        return new MotorBlockCommand(this->motor, this->motor->get_position() + target_angle);
     }
 
     ArmMotorSystem(pros::Motor *motor){

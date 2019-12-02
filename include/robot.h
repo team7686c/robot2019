@@ -9,14 +9,11 @@ extern "C" {
 
 class BlockCommand {
 public:
-	pros::Motor* motor;
-	double target_position;
-
-	virtual bool check();
-	BlockCommand(pros::Motor*, double);
+	virtual bool check() = 0;
 	void block();
 };
 
+class MotorBlockCommand;
 class MultiBlockCommand;
 
 
