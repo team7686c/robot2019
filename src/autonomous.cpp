@@ -22,13 +22,17 @@ void unfold(RobotDeviceInterfaces *robot){
     // Move the tray back
     robot->tray->move_angle(-0.25)->block();
 
+    // Move the arms up then down to make sure the tray unfolds
+    robot->arm->move_angle(0.2)->block();
+    robot->arm->move_angle(-0.2)->block();
+
     // Stop the rollers
     robot->roller->move_velocity(0);
 
     // Finished unfolding
 }
 
-const int default_autonomous_selection = 1;
+const int default_autonomous_selection = 2;
 
 int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
@@ -44,8 +48,9 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
         unfold(robot);
 
         robot->roller->move_velocity(100);
-        robot->straight_drive->move_distance(24);
-        robot->straight_drive->move_distance(-20);
+
+        robot->straight_drive->move_distance(24)->block();
+        robot->straight_drive->move_distance(-20)->block();
     }},
     {"right angle turn", [](RobotDeviceInterfaces *robot){
         robot->turn_drive->move_angle(0.25);

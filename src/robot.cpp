@@ -3,6 +3,12 @@
 #include <algorithm>
 #include <math.h>
 
+void BlockCommand::block() {
+    while(!this->check()){
+        pros::delay(2);
+    }
+}
+
 class MotorBlockCommand: public BlockCommand {
 private:
     pros::Motor* motor;
@@ -187,8 +193,8 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
     this->tray_motor = new pros::Motor(19, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->tray_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
-    this->left_roller_motor = new pros::Motor(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
-    this->right_roller_motor = new pros::Motor(9, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
+    this->left_roller_motor = new pros::Motor(2, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
+    this->right_roller_motor = new pros::Motor(9, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
 
     this->left_drive = new WheelMotorSystem(this->left_drive_motor, 3.25);
     this->right_drive = new WheelMotorSystem(this->right_drive_motor, 3.25);
