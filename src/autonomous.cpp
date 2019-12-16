@@ -11,20 +11,12 @@ void unfold(RobotDeviceInterfaces *robot){
     // Move the tray forward
     robot->tray->move_angle(0.25)->block();
 
-    // Move the arms up then down
-    robot->arm->move_angle(0.1)->block();
-    robot->arm->move_angle(-0.1)->block();
-
     // Start the roller
-    robot->roller->move_velocity(150);
-    pros::delay(1500);
+    robot->roller->move_velocity(100);
+    pros::delay(1000);
 
     // Move the tray back
-    robot->tray->move_angle(-0.25)->block();
-
-    // Move the arms up then down to make sure the tray unfolds
-    robot->arm->move_angle(0.2)->block();
-    robot->arm->move_angle(-0.2)->block();
+    robot->tray->move_angle(-0.25);
 
     // Stop the rollers
     robot->roller->move_velocity(0);
@@ -47,13 +39,30 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
     {"4 point autonomous", [](RobotDeviceInterfaces *robot){
         unfold(robot);
 
-        robot->roller->move_velocity(100);
+        robot->roller->move_velocity(-100);
 
-        robot->straight_drive->move_distance(24)->block();
-        robot->straight_drive->move_distance(-20)->block();
+        double d = 40; // Distance to drive forward to pick up first stack
+
+        // Drive forward at 55RPM
+        robot->straight_drive->set_speed(55);
+        robot->straight_drive->move_distance(d)->block();
+
+        // Drive back at 80RPM and keep the block command for later
+        robot->straight_drive->set_speed(100);
+        auto drive_back = robot->straight_drive->move_distance(-d + 5);
+
+        // Wait half a second then stop the rollers.
+        pros::delay(100);
+        robot->roller->move_velocity(0);
+
+        // Wait unitl the drive backward is done.
+        drive_back->block();
+
+        robot->turn_drive->move_angle(0.35);
+
     }},
-    {"right angle turn", [](RobotDeviceInterfaces *robot){
-        robot->turn_drive->move_angle(0.25);
+    {"Unfold", [](RobotDeviceInterfaces *robot){
+        unfold(robot);
     }}
 };
 

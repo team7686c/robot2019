@@ -33,6 +33,7 @@ class LinearMotorSystem: public MotorSystem {
 public:
 	// Distance should be in inches
 	virtual BlockCommand *move_distance(double distance) = 0;
+	virtual void set_speed(double speed) = 0;
 };
 
 // In future, add an AbsoluteAngularMotorSystem interface with a move_to_angle

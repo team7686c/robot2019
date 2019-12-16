@@ -16,7 +16,7 @@ private:
 
 public:
 	virtual bool check() override {
-        const double TARGET_SIZE = 0.05;
+        const double TARGET_SIZE = 0.01;
 
         auto pos = this->motor->get_position();
         return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
@@ -46,22 +46,30 @@ class WheelMotorSystem: public LinearMotorSystem {
 private:
     pros::Motor *motor;
     double diameter;
+    double speed;
+    // TODO: Add adjustable drive speed form move_distance
 
 public:
+
     void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
-    BlockCommand *move_distance(double distance) override {
+    virtual BlockCommand *move_distance(double distance) override {
         double target_distance = distance / (diameter * M_PI);
-        this->motor->move_relative(target_distance, 100);
+        this->motor->move_relative(target_distance, this->speed);
 
         return new MotorBlockCommand(this->motor, this->motor->get_position() + target_distance);
     }
 
-    WheelMotorSystem(pros::Motor *motor, double diameter) {
+    virtual void set_speed(double speed) override {
+        this->speed = speed;
+    }
+
+    WheelMotorSystem(pros::Motor *motor, double diameter, double speed = 100) {
         this->motor = motor;
         this->diameter = diameter;
+        this->speed = speed;
     }
 };
 
@@ -109,6 +117,11 @@ public:
         );
     }
 
+    virtual void set_speed(double speed) override {
+        this->left_drive->set_speed(speed);
+        this->right_drive->set_speed(speed);
+    }
+
     StraightDriveMotorSystem(LinearMotorSystem *left_drive, LinearMotorSystem *right_drive){
         this->left_drive = left_drive;
         this->right_drive = right_drive;
@@ -131,6 +144,11 @@ public:
             this->left_roller->move_distance(distance),
             this->right_roller->move_distance(distance)
         );
+    }
+
+    virtual void set_speed(double speed) override {
+        this->left_roller->set_speed(speed);
+        this->right_roller->set_speed(speed);
     }
 
     RollerMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor, double roller_radius) {
