@@ -54,6 +54,10 @@
 // using namespace pros::literals;
 // using namespace okapi;
 
+#ifdef __cplusplus
+#include "robot.h"
+#endif
+
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
  * that they can be called from user code (i.e. calling autonomous from a
@@ -63,8 +67,6 @@
 extern "C" {
 #endif
 
-#include "robot.h"
-
 extern RobotDeviceInterfaces *global_robot;
 extern pros::Controller *global_controller;
 
@@ -73,7 +75,6 @@ void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
-
 
 #ifdef __cplusplus
 }

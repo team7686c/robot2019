@@ -10,11 +10,11 @@ class FeedbackController {
 public:
 	// The measure function is used to store controller state in a member
 	// variable
-	virtual void measure(pros::Controller *controller){};
+	virtual void measure(pros::Controller *controller) = 0;
 
 	// The act function is used to change the state of the motors based on the
 	// member variable
-	virtual void act(RobotDeviceInterfaces *robot){};
+	virtual void act(RobotDeviceInterfaces *robot) = 0;
 };
 
 float cubic_control(float input){
@@ -131,10 +131,12 @@ public:
 
 	void act(RobotDeviceInterfaces* robot) override {
 		if(this->button_state){
-			robot->roller->move_velocity(50);
+			// robot->roller->move_velocity(50);
+			//
+			// robot->left_drive->move_velocity(-50);
+			// robot->right_drive->move_velocity(-50);
 
-			robot->left_drive->move_velocity(-50);
-			robot->right_drive->move_velocity(-50);
+			robot->stack_setdown->move_velocity(50);
 		}
 	}
 };

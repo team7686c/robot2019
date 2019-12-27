@@ -16,7 +16,7 @@ private:
 
 public:
 	virtual bool check() override {
-        const double TARGET_SIZE = 0.01;
+        const double TARGET_SIZE = 0.015;
 
         auto pos = this->motor->get_position();
         return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
@@ -163,11 +163,11 @@ private:
     pros::Motor *motor;
 
 public:
-    void move_velocity(double velocity) override {
+    virtual void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
-    BlockCommand *move_angle(double angle) override {
+    virtual BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
         this->motor->move_relative(target_angle, 50);
 
@@ -201,6 +201,34 @@ public:
     }
 };
 
+class StackSetdownSystem: public LinearMotorSystem {
+private:
+    LinearMotorSystem *roller, *drive;
+
+public:
+    void move_velocity(double velocity) override {
+        this->drive->move_velocity(-velocity);
+        this->roller->move_velocity(velocity);
+    }
+
+    BlockCommand *move_distance(double distance) override {
+        return new MultiBlockCommand(
+            this->drive->move_distance(-distance),
+            this->roller->move_distance(distance)
+        );
+    }
+
+    virtual void set_speed(double speed) override {
+        this->drive->set_speed(speed);
+        this->roller->set_speed(speed);
+    }
+
+    StackSetdownSystem(LinearMotorSystem* drive, LinearMotorSystem* roller){
+        this->drive = drive;
+        this->roller = roller;
+    }
+};
+
 RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->left_drive_motor = new pros::Motor(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
     this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -222,4 +250,5 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor, 1.875);
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->arm_motor);
+    this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);
 }

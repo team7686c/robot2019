@@ -16,7 +16,6 @@ public:
 class MotorBlockCommand;
 class MultiBlockCommand;
 
-
 class MotorSystem {
 public:
 	// Velocity in RPM
@@ -65,6 +64,7 @@ public:
 	AngularMotorSystem *tray;
 	AngularMotorSystem *arm;
 	LinearMotorSystem *roller;
+	LinearMotorSystem *stack_setdown;
 
 	pros::Controller *controller;
 

@@ -41,25 +41,35 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
 
         robot->roller->move_velocity(-100);
 
-        double d = 40; // Distance to drive forward to pick up first stack
+        double d = 36; // Distance to drive forward to pick up first stack
 
         // Drive forward at 55RPM
-        robot->straight_drive->set_speed(55);
+        robot->straight_drive->set_speed(50);
         robot->straight_drive->move_distance(d)->block();
 
         // Drive back at 80RPM and keep the block command for later
         robot->straight_drive->set_speed(100);
-        auto drive_back = robot->straight_drive->move_distance(-d + 5);
+        auto drive_back = robot->straight_drive->move_distance(-d + 15);
 
-        // Wait half a second then stop the rollers.
+        // Wait half a bit then stop the rollers.
         pros::delay(100);
         robot->roller->move_velocity(0);
 
         // Wait unitl the drive backward is done.
         drive_back->block();
 
-        robot->turn_drive->move_angle(0.35);
+        robot->turn_drive->move_angle(0.39)->block();
 
+        robot->straight_drive->move_distance(6.5)->block();
+        robot->roller->move_distance(5.25)->block();
+
+        robot->tray->move_angle(0.21)->block();
+
+        robot->stack_setdown->set_speed(50);
+        robot->stack_setdown->move_distance(8)->block();
+        robot->stack_setdown->set_speed(100);
+
+        // TODO: Put the tray back into the neutral position
     }},
     {"Unfold", [](RobotDeviceInterfaces *robot){
         unfold(robot);
