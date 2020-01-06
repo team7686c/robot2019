@@ -229,16 +229,28 @@ public:
     }
 };
 
+void RobotDeviceInterfaces::activate_brakes() {
+    std::cout << "Activated brakes\n";
+    this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
+    this->right_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
+    this->arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
+    this->tray_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
+}
+
+void RobotDeviceInterfaces::deactivate_brakes() {
+    std::cout << "Deactivated brakes\n";
+    this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+    this->right_drive_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+    this->arm_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+    this->tray_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+}
+
 RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->left_drive_motor = new pros::Motor(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-    this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
     this->right_drive_motor = new pros::Motor(20, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
-    this->right_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
 
     this->arm_motor = new pros::Motor(1, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
-    this->arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
     this->tray_motor = new pros::Motor(19, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
-    this->tray_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
     this->left_roller_motor = new pros::Motor(2, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->right_roller_motor = new pros::Motor(9, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
 
@@ -251,4 +263,6 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->arm_motor);
     this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);
+
+    this->activate_brakes();
 }

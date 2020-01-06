@@ -69,6 +69,9 @@ public:
 	pros::Controller *controller;
 
     RobotDeviceInterfaces();
+
+	void activate_brakes();
+	void deactivate_brakes();
 };
 
 #ifdef __cplusplus

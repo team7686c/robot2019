@@ -55,15 +55,21 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
         pros::delay(100);
         robot->roller->move_velocity(0);
 
+        robot->roller->move_distance(2)->block();
+        robot->roller->move_distance(-2)->block();
+
         // Wait unitl the drive backward is done.
         drive_back->block();
 
         robot->turn_drive->move_angle(0.39)->block();
 
         robot->straight_drive->move_distance(6.5)->block();
-        robot->roller->move_distance(5.25)->block();
+        robot->roller->move_distance(5.5)->block();
 
-        robot->tray->move_angle(0.21)->block();
+        robot->roller->set_speed(50);
+        robot->roller->move_distance(-3.0)->block();
+
+        robot->tray->move_angle(0.23)->block();
 
         robot->stack_setdown->set_speed(50);
         robot->stack_setdown->move_distance(8)->block();
@@ -143,6 +149,7 @@ void autonomous() {
     std::cout << "Autonomous start\n";
 
     RobotDeviceInterfaces *robot = global_robot;
+    robot->activate_brakes();
 
     std::get<1>(autonomous_programs[autonomous_selection])(global_robot);
 

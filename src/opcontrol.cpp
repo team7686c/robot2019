@@ -163,6 +163,8 @@ void opcontrol(){
 
 	// Grab the global state pointers
 	RobotDeviceInterfaces *robot = global_robot;
+	robot->activate_brakes();
+	
 	pros::Controller *controller = global_controller;
 
 	// Collect the FeedbackController implementations into a vector for
