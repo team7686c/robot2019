@@ -263,6 +263,4 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->arm_motor);
     this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);
-
-    this->activate_brakes();
 }
