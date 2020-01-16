@@ -59,7 +59,7 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
         robot->turn_drive->move_angle(-0.38)->block();
         robot->straight_drive->move_distance(7.25)->block();
     } else {
-        robot->turn_drive->move_angle(0.39)->block();
+        robot->turn_drive->move_angle(0.385)->block();
         robot->straight_drive->move_distance(6.75)->block();
     }
 
@@ -81,7 +81,23 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
     // TODO: Put the tray back into the neutral position
 }
 
-const int default_autonomous_selection = 3;
+void setdown(RobotDeviceInterfaces *robot){
+    robot->roller->set_speed(50);
+    robot->roller->move_distance(5.5)->block();
+    robot->roller->move_distance(-3.0)->block();
+    pros::delay(250);
+
+    robot->tray->move_angle(0.23)->block();
+
+    robot->roller->move_distance(0.5)->block();
+    pros::delay(250);
+
+    robot->stack_setdown->set_speed(50);
+    robot->stack_setdown->move_distance(8)->block();
+    robot->stack_setdown->set_speed(100);
+}
+
+const int default_autonomous_selection = 4;
 
 int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
@@ -98,6 +114,48 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
     }},
     {"blue 4 point autonomous", [](RobotDeviceInterfaces *robot){
         four_point_autonomous(robot, true);
+    }},
+    {"big auto", [](RobotDeviceInterfaces *robot){
+        // Drive forward then backward to push a cube into the goal zone.
+        unfold(robot);
+
+        robot->straight_drive->move_distance(25)->block();
+
+        robot->turn_drive->move_angle(0.09)->block();
+
+        robot->roller->move_velocity(-100);
+        robot->straight_drive->set_speed(200);
+        robot->straight_drive->move_distance(15)->block();
+        robot->roller->move_velocity(0);
+
+        robot->straight_drive->set_speed(100);
+
+        robot->turn_drive->move_angle(-0.475)->block();
+
+        robot->roller->move_velocity(-100);
+        robot->straight_drive->move_distance(30)->block();
+        robot->roller->move_velocity(0);
+
+        // Setdown Proc
+        setdown(robot);
+    }},
+    {"small auto", [](RobotDeviceInterfaces *robot){
+        unfold(robot);
+
+        robot->roller->move_velocity(-100);
+        robot->straight_drive->move_distance(12)->block();
+        robot->roller->move_velocity(0);
+
+        robot->turn_drive->move_angle(0.2);
+
+        robot->roller->move_velocity(-100);
+        robot->straight_drive->move_distance(12);
+        robot->roller->move_velocity(0);
+
+
+        // setdown(robot);
+
+
     }},
     {"Unfold", [](RobotDeviceInterfaces *robot){
         unfold(robot);
