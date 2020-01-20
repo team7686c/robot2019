@@ -50,12 +50,10 @@ class TrayMotorSystem;
 
 class RobotDeviceInterfaces {
 private:
-	pros::Motor *left_drive_motor;
-	pros::Motor *right_drive_motor;
-	pros::Motor *arm_motor;
+	pros::Motor *left_drive_motor, *right_drive_motor;
+	pros::Motor *left_arm_motor, *right_arm_motor;
 	pros::Motor *tray_motor;
-	pros::Motor *left_roller_motor;
-	pros::Motor *right_roller_motor;
+	pros::Motor *left_roller_motor, *right_roller_motor;
 
 public:
 	LinearMotorSystem *left_drive, *right_drive;

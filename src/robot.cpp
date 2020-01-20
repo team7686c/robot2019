@@ -181,23 +181,29 @@ public:
 
 class ArmMotorSystem: public AngularMotorSystem {
 private:
-    pros::Motor *motor;
+    pros::Motor *left_motor, *right_motor;
 
 public:
     void move_velocity(double velocity) override {
-        this->motor->move_velocity(velocity);
+        this->left_motor->move_velocity(velocity);
+        this->right_motor->move_velocity(velocity);
     }
 
     BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
 
-        this->motor->move_relative(target_angle, 75);
+        this->left_motor->move_relative(target_angle, 75);
+        this->right_motor->move_relative(target_angle, 75);
 
-        return new MotorBlockCommand(this->motor, this->motor->get_position() + target_angle);
+        return new MultiBlockCommand(
+            new MotorBlockCommand(this->left_motor, this->left_motor->get_position() + target_angle),
+            new MotorBlockCommand(this->right_motor, this->right_motor->get_position() + target_angle)
+        );
     }
 
-    ArmMotorSystem(pros::Motor *motor){
-        this->motor = motor;
+    ArmMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor){
+        this->left_motor = left_motor;
+        this->right_motor = right_motor;
     }
 };
 
@@ -233,7 +239,8 @@ void RobotDeviceInterfaces::activate_brakes() {
     std::cout << "Activated brakes\n";
     this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
     this->right_drive_motor->set_brake_mode(MOTOR_BRAKE_BRAKE);
-    this->arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
+    this->left_arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
+    this->right_arm_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
     this->tray_motor->set_brake_mode(MOTOR_BRAKE_HOLD);
 }
 
@@ -241,7 +248,8 @@ void RobotDeviceInterfaces::deactivate_brakes() {
     std::cout << "Deactivated brakes\n";
     this->left_drive_motor->set_brake_mode(MOTOR_BRAKE_COAST);
     this->right_drive_motor->set_brake_mode(MOTOR_BRAKE_COAST);
-    this->arm_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+    this->left_arm_motor->set_brake_mode(MOTOR_BRAKE_COAST);
+    this->right_arm_motor->set_brake_mode(MOTOR_BRAKE_COAST);
     this->tray_motor->set_brake_mode(MOTOR_BRAKE_COAST);
 }
 
@@ -249,7 +257,8 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->left_drive_motor = new pros::Motor(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
     this->right_drive_motor = new pros::Motor(20, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
 
-    this->arm_motor = new pros::Motor(1, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
+    this->left_arm_motor = new pros::Motor(1, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
+    this->right_arm_motor = new pros::Motor(10, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->tray_motor = new pros::Motor(19, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->left_roller_motor = new pros::Motor(2, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->right_roller_motor = new pros::Motor(9, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
@@ -261,6 +270,6 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
 
     this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor, 1.875);
     this->tray = new TrayMotorSystem(this->tray_motor);
-    this->arm = new ArmMotorSystem(this->arm_motor);
+    this->arm = new ArmMotorSystem(this->left_arm_motor, this->right_arm_motor);
     this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);
 }
