@@ -75,7 +75,7 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
     pros::delay(250);
 
     robot->stack_setdown->set_speed(50);
-    robot->stack_setdown->move_distance(8)->block();
+    robot->stack_setdown->move_distance(12)->block();
     robot->stack_setdown->set_speed(100);
 
     // TODO: Put the tray back into the neutral position
