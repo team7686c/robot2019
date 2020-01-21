@@ -26,6 +26,7 @@ class AngularMotorSystem: public MotorSystem {
 public:
 	// Angle should be in rotations
 	virtual BlockCommand *move_angle(double angle) = 0;
+	virtual void set_speed(double speed) = 0;
 };
 
 class LinearMotorSystem: public MotorSystem {
@@ -40,6 +41,10 @@ public:
 // function. This is a more advanced extension of MotorSystems that isn't a top
 // priority.
 
+class AbsoluteAngularMotorSystem: public AngularMotorSystem {
+public:
+	virtual BlockCommand *move_to_angle(double angle) = 0;
+};
 
 // Implementation classes:
 class WheelMotorSystem;
@@ -59,7 +64,7 @@ public:
 	LinearMotorSystem *left_drive, *right_drive;
 	LinearMotorSystem *straight_drive;
 	AngularMotorSystem *turn_drive;
-	AngularMotorSystem *tray;
+	AbsoluteAngularMotorSystem *tray;
 	AngularMotorSystem *arm;
 	LinearMotorSystem *roller;
 	LinearMotorSystem *stack_setdown;

@@ -105,14 +105,38 @@ public:
 // to automatically move to the correct position (upright or back).
 class TrayController: public FeedbackController {
 public:
+	bool command;
+	bool flush;
 	int tray_velocity;
 
 	void measure(pros::Controller *controller) override {
-		this->tray_velocity = (controller->get_digital(DIGITAL_A) - controller->get_digital(DIGITAL_B)) * 50;
+		bool a = controller->get_digital(DIGITAL_A);
+		bool b = controller->get_digital(DIGITAL_B);
+
+		if(a){
+			this->tray_velocity = 50;
+			this->command = true;
+		}
+
+		if(b){
+			this->tray_velocity = -50;
+			this->command = true;
+		}
+
+		if(!a && !b && this->command){
+			this->tray_velocity = 0;
+			this->flush = true;
+		}
 	}
 
 	void act(RobotDeviceInterfaces* robot) override {
-		robot->tray->move_velocity(this->tray_velocity);
+		if(this->command){
+			robot->tray->move_velocity(this->tray_velocity);
+			if(this->flush){
+				this->command = false;
+				this->flush = false;
+			}
+		}
 	}
 };
 
@@ -138,6 +162,29 @@ public:
 
 			robot->stack_setdown->move_velocity(50);
 		}
+	}
+};
+
+class AutoStackController: public FeedbackController {
+public:
+	int command;
+
+	void measure(pros::Controller *controller) override {
+		if(controller->get_digital(DIGITAL_UP)){
+			this->command = 1;
+		} else if(controller->get_digital(DIGITAL_LEFT)){
+			this->command = -1;
+		}
+	}
+
+	void act(RobotDeviceInterfaces* robot) override {
+		if(this->command == -1){
+			robot->tray->move_to_angle(0.04);
+		} else if(this->command == 1){
+			robot->tray->move_to_angle(0.25);
+		}
+
+		this->command = 0;
 	}
 };
 
@@ -175,6 +222,7 @@ void opcontrol(){
 		new ArmController(),
 		new TrayController(),
 		new AutoBackupController(),
+		new AutoStackController(),
 	};
 
 	while (true) {

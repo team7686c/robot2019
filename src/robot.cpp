@@ -84,6 +84,11 @@ public:
         this->right_drive->move_velocity(-velocity);
     }
 
+    void set_speed(double speed) override {
+        this->left_drive->set_speed(speed);
+        this->right_drive->set_speed(speed);
+    }
+
     BlockCommand *move_angle(double angle) override {
         // Angle should be in rotations positive for clockwise, negative for counter-clockwise
 
@@ -158,30 +163,45 @@ public:
     }
 };
 
-class TrayMotorSystem: public AngularMotorSystem {
+class TrayMotorSystem: public AbsoluteAngularMotorSystem {
 private:
     pros::Motor *motor;
+    double speed;
 
 public:
     virtual void move_velocity(double velocity) override {
         this->motor->move_velocity(velocity);
     }
 
+    virtual void set_speed(double speed) override {
+        // Should not excede 50 rpm
+        this->speed = speed;
+    }
+
     virtual BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
-        this->motor->move_relative(target_angle, 50);
+        this->motor->move_relative(target_angle, this->speed);
 
         return new MotorBlockCommand(this->motor, this->motor->get_position() + target_angle);
     }
 
+    virtual BlockCommand *move_to_angle(double angle) override {
+        double target_angle = angle * 7;
+        this->motor->move_absolute(target_angle, this->speed);
+
+        return new MotorBlockCommand(this->motor, target_angle);
+    }
+
     TrayMotorSystem(pros::Motor *motor){
         this->motor = motor;
+        this->speed = 50;
     }
 };
 
 class ArmMotorSystem: public AngularMotorSystem {
 private:
     pros::Motor *left_motor, *right_motor;
+    double speed;
 
 public:
     void move_velocity(double velocity) override {
@@ -192,8 +212,8 @@ public:
     BlockCommand *move_angle(double angle) override {
         double target_angle = angle * 7;
 
-        this->left_motor->move_relative(target_angle, 75);
-        this->right_motor->move_relative(target_angle, 75);
+        this->left_motor->move_relative(target_angle, this->speed);
+        this->right_motor->move_relative(target_angle, this->speed);
 
         return new MultiBlockCommand(
             new MotorBlockCommand(this->left_motor, this->left_motor->get_position() + target_angle),
@@ -201,9 +221,14 @@ public:
         );
     }
 
+    virtual void set_speed(double speed) override {
+        this->speed = speed;
+    }
+
     ArmMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor){
         this->left_motor = left_motor;
         this->right_motor = right_motor;
+        this->speed = 75;
     }
 };
 

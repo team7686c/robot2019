@@ -63,7 +63,6 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
         robot->straight_drive->move_distance(6.75)->block();
     }
 
-
     robot->roller->set_speed(50);
     robot->roller->move_distance(5.5)->block();
     robot->roller->move_distance(-3.0)->block();
