@@ -1,6 +1,10 @@
 #include "main.h"
 #include <vector>
 
+// The controller poll rate determines how long the controller will wait between
+// iterations of the control loop.
+const int CONTROLLER_POLL_RATE = 1000 / 30;
+
 // This class is an interface for the feedback control loop in the main
 // operator control function. The class splits up the measure phase (reading
 // controller input) and the act phase (setting motor speeds) so that the robot
@@ -72,6 +76,25 @@ public:
 
 	void act(RobotDeviceInterfaces *robot) override {
 		robot->arm->move_velocity(this->arm_speed);
+	}
+};
+
+class ArmRecenterController: public FeedbackController {
+public:
+	int command;
+
+	void measure(pros::Controller *controller) override {
+		if(controller->get_digital(DIGITAL_X)){
+			this->command = 1;
+			std::cout << "Recenter commanded\n";
+		}
+	}
+
+	void act(RobotDeviceInterfaces *robot) override {
+		if(this->command == 1){
+			robot->arm->recenter();
+			this->command = 0;
+		}
 	}
 };
 
@@ -203,10 +226,6 @@ public:
 	}
 };
 
-// The controller poll rate determines how long the controller will wait between
-// iterations of the control loop.
-const int CONTROLLER_POLL_RATE = 1000 / 30;
-
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -235,6 +254,7 @@ void opcontrol(){
 		new DrivetrainController(),
 		new RollerController(),
 		new ArmController(),
+		new ArmRecenterController(),
 		new TrayController(),
 		new AutoBackupController(),
 		new AutoStackController(),

@@ -20,6 +20,11 @@ class MotorSystem {
 public:
 	// Velocity in RPM
 	virtual void move_velocity(double velocity) = 0;
+
+	// Optional
+	virtual void recenter() {
+		std::cout << "!!! Default recenter !!!\n";
+	};
 };
 
 class AngularMotorSystem: public MotorSystem {
@@ -52,6 +57,7 @@ class TurnDriveMotorSystem;
 class StraightDriveMotorSystem;
 class RollerMotorSystem;
 class TrayMotorSystem;
+class ArmMotorSystem;
 
 class RobotDeviceInterfaces {
 private:
@@ -65,7 +71,7 @@ public:
 	LinearMotorSystem *straight_drive;
 	AngularMotorSystem *turn_drive;
 	AbsoluteAngularMotorSystem *tray;
-	AngularMotorSystem *arm;
+	AbsoluteAngularMotorSystem *arm;
 	LinearMotorSystem *roller;
 	LinearMotorSystem *stack_setdown;
 

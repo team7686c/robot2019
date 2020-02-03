@@ -224,7 +224,7 @@ public:
     }
 };
 
-class ArmMotorSystem: public AngularMotorSystem {
+class ArmMotorSystem: public AbsoluteAngularMotorSystem {
 private:
     pros::Motor *left_motor, *right_motor;
     double speed;
@@ -249,6 +249,39 @@ public:
 
     virtual void set_speed(double speed) override {
         this->speed = speed;
+    }
+
+    virtual BlockCommand *move_to_angle(double angle) override {
+        double target_angle = angle * 7;
+
+        this->left_motor->move_absolute(target_angle, this->speed);
+        this->right_motor->move_absolute(target_angle, this->speed);
+
+        return new MultiBlockCommand(
+            new MotorBlockCommand(this->left_motor, target_angle),
+            new MotorBlockCommand(this->right_motor, target_angle)
+        );
+    }
+
+    virtual void recenter() override {
+        double left_motor_pos = this->left_motor->get_position();
+        double right_motor_pos = this->right_motor->get_position();
+
+        double target_pos = (left_motor_pos + right_motor_pos) / 2;
+
+        std::cout << "Recenter op.\n";
+        std::cout << "l:" << left_motor_pos
+            << " r:" << right_motor_pos
+            << " c:" << target_pos
+            << "\n";
+
+        this->left_motor->move_absolute(target_pos, 25);
+        this->right_motor->move_absolute(target_pos, 25);
+
+        (new MultiBlockCommand(
+            new MotorBlockCommand(this->left_motor, target_pos),
+            new MotorBlockCommand(this->right_motor, target_pos)
+        ))->block();
     }
 
     ArmMotorSystem(pros::Motor *left_motor, pros::Motor *right_motor){
