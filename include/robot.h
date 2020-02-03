@@ -77,6 +77,8 @@ public:
 	void deactivate_brakes();
 };
 
+void unfold(RobotDeviceInterfaces*);
+
 #ifdef __cplusplus
 }
 #endif

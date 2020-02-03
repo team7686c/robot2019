@@ -67,7 +67,7 @@ public:
 	int arm_speed; // in RPM
 
 	void measure(pros::Controller *controller) override {
-		this->arm_speed = (controller->get_digital(DIGITAL_L1) - controller->get_digital(DIGITAL_L2)) * 50;
+		this->arm_speed = (controller->get_digital(DIGITAL_L1) - controller->get_digital(DIGITAL_L2)) * 100;
 	}
 
 	void act(RobotDeviceInterfaces *robot) override {
@@ -147,20 +147,17 @@ public:
 // while spinning the rollers at the same rate.
 class AutoBackupController: public FeedbackController {
 public:
-	bool button_state;
+	int button_state;
 
 	void measure(pros::Controller *controller) override {
-		this->button_state = controller->get_digital(DIGITAL_DOWN);
+		this->button_state = (controller->get_digital(DIGITAL_DOWN) - controller->get_digital(DIGITAL_RIGHT));
 	}
 
 	void act(RobotDeviceInterfaces* robot) override {
-		if(this->button_state){
-			// robot->roller->move_velocity(50);
-			//
-			// robot->left_drive->move_velocity(-50);
-			// robot->right_drive->move_velocity(-50);
-
+		if(this->button_state == 1){
 			robot->stack_setdown->move_velocity(50);
+		} else if(this->button_state == -1){
+			robot->stack_setdown->move_velocity(-50);
 		}
 	}
 };
@@ -177,7 +174,7 @@ public:
 		}
 	}
 
-	void act(RobotDeviceInterfaces* robot) override {
+	void act(RobotDeviceInterfaces *robot) override {
 		if(this->command == -1){
 			robot->tray->move_to_angle(0.04);
 		} else if(this->command == 1){
@@ -185,6 +182,24 @@ public:
 		}
 
 		this->command = 0;
+	}
+};
+
+class AutoUnfoldController: public FeedbackController {
+public:
+	int command = 0;
+
+	void measure(pros::Controller *controller) override {
+		if(this->command == 0 && controller->get_digital(DIGITAL_Y)){
+			this->command = 1;
+		}
+	}
+
+	void act(RobotDeviceInterfaces *robot) override {
+		if(this->command == 1){
+			unfold(robot);
+			this->command = 2;
+		}
 	}
 };
 

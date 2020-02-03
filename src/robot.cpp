@@ -28,6 +28,32 @@ public:
     }
 };
 
+class MotorStallBlockCommand: public BlockCommand {
+private:
+    pros::Motor* motor;
+    double last_pos;
+
+public:
+    virtual bool check() override {
+        const double TARGET_SIZE = 0;
+
+        double next_pos = this->motor->get_position();
+
+        if(next_pos - this->last_pos == 0){
+            this->motor->move_velocity(0);
+            return true;
+        } else {
+            this->last_pos = next_pos;
+            return false;
+        }
+    }
+
+    MotorStallBlockCommand(pros::Motor *motor){
+        this->motor = motor;
+        this->last_pos = 0;
+    }
+};
+
 class MultiBlockCommand: public BlockCommand {
 public:
 	BlockCommand *c1, *c2;
@@ -297,4 +323,21 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->left_arm_motor, this->right_arm_motor);
     this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);
+}
+
+void unfold(RobotDeviceInterfaces *robot){
+    // Move the tray forward
+    robot->tray->move_angle(0.25)->block();
+
+    // Start the roller
+    robot->roller->move_velocity(100);
+    pros::delay(1000);
+
+    // Move the tray back
+    robot->tray->move_angle(-0.25);
+
+    // Stop the rollers
+    robot->roller->move_velocity(0);
+
+    // Finished unfolding
 }
