@@ -258,6 +258,7 @@ void opcontrol(){
 		new TrayController(),
 		new AutoBackupController(),
 		new AutoStackController(),
+		new AutoUnfoldController(),
 	};
 
 	while (true) {
