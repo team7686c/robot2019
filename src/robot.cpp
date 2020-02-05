@@ -269,12 +269,6 @@ public:
 
         double target_pos = (left_motor_pos + right_motor_pos) / 2;
 
-        std::cout << "Recenter op.\n";
-        std::cout << "l:" << left_motor_pos
-            << " r:" << right_motor_pos
-            << " c:" << target_pos
-            << "\n";
-
         this->left_motor->move_absolute(target_pos, 25);
         this->right_motor->move_absolute(target_pos, 25);
 
