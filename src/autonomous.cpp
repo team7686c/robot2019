@@ -9,8 +9,8 @@ int eucmod(int x, int m){
 
 void setdown(RobotDeviceInterfaces *robot){
     robot->roller->set_speed(50);
-    robot->roller->move_distance(7)->block();
-    robot->roller->move_distance(-2.0)->block();
+    robot->roller->move_distance(5)->block();
+    robot->roller->move_distance(-1.5)->block();
     pros::delay(250);
 
     robot->tray->move_angle(0.23)->block();
@@ -62,28 +62,12 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
         robot->straight_drive->move_distance(6.75)->block();
     }
 
-    /*
-    robot->roller->set_speed(50);
-    robot->roller->move_distance(5.5)->block();
-    robot->roller->move_distance(-3.0)->block();
-    pros::delay(250);
-
-    robot->tray->move_angle(0.23)->block();
-
-    robot->roller->move_distance(0.5)->block();
-    pros::delay(250);
-
-    robot->stack_setdown->set_speed(50);
-    robot->stack_setdown->move_distance(12)->block();
-    robot->stack_setdown->set_speed(100);
-    */
-
     setdown(robot);
 
     // TODO: Put the tray back into the neutral position
 }
 
-const int default_autonomous_selection = 2;
+const int default_autonomous_selection = 3;
 
 int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
@@ -111,15 +95,15 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
 
         robot->roller->move_velocity(-100);
         robot->straight_drive->set_speed(200);
-        robot->straight_drive->move_distance(15)->block();
+        robot->straight_drive->move_distance(18)->block();
         robot->roller->move_velocity(0);
 
         robot->straight_drive->set_speed(100);
 
-        robot->turn_drive->move_angle(-0.475)->block();
+        robot->turn_drive->move_angle(-0.465)->block();
 
         robot->roller->move_velocity(-100);
-        robot->straight_drive->move_distance(30)->block();
+        robot->straight_drive->move_distance(33)->block();
         robot->roller->move_velocity(0);
 
         setdown(robot);

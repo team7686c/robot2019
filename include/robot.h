@@ -22,9 +22,7 @@ public:
 	virtual void move_velocity(double velocity) = 0;
 
 	// Optional
-	virtual void recenter() {
-		std::cout << "!!! Default recenter !!!\n";
-	};
+	virtual void recenter() {};
 };
 
 class AngularMotorSystem: public MotorSystem {

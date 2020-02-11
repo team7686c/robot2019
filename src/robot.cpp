@@ -16,7 +16,7 @@ private:
 
 public:
 	virtual bool check() override {
-        const double TARGET_SIZE = 0.015;
+        const double TARGET_SIZE = 0.02;
 
         auto pos = this->motor->get_position();
         return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
