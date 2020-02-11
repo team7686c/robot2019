@@ -360,7 +360,7 @@ void unfold(RobotDeviceInterfaces *robot){
 
     // Start the roller
     robot->roller->move_velocity(100);
-    pros::delay(1000);
+    pros::delay(200);
 
     // Move the tray back
     robot->tray->move_to_angle(0.03)->block();
