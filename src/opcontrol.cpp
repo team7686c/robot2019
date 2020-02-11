@@ -220,7 +220,10 @@ public:
 
 	void act(RobotDeviceInterfaces *robot) override {
 		if(this->command == 1){
+			std::uint32_t time_before = pros::millis();
 			unfold(robot);
+			std::uint32_t time_after = pros::millis();
+			std::cout << "Unfold time taken: " << time_after - time_before << "\n";
 			this->command = 2;
 		}
 	}
@@ -265,13 +268,11 @@ void opcontrol(){
 		std::uint32_t time = pros::millis();
 
 		// Measure phase
-		std::cout << "Start measure phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->measure(controller);
 		}
 
 		// Act phase
-		std::cout << "Start act phase\n";
 		for(auto feedbackController: feedbackControllers){
 			feedbackController->act(robot);
 		}

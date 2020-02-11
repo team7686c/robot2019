@@ -353,15 +353,18 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
 }
 
 void unfold(RobotDeviceInterfaces *robot){
+    robot->tray->set_speed(100);
+
     // Move the tray forward
-    robot->tray->move_angle(0.25)->block();
+    robot->tray->move_to_angle(0.25)->block();
 
     // Start the roller
     robot->roller->move_velocity(100);
     pros::delay(1000);
 
     // Move the tray back
-    robot->tray->move_angle(-0.25);
+    robot->tray->move_to_angle(0.03)->block();
+    robot->tray->set_speed(100);
 
     // Stop the rollers
     robot->roller->move_velocity(0);
