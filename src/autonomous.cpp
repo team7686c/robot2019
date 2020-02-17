@@ -34,7 +34,7 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
     robot->straight_drive->set_speed(50);
     robot->straight_drive->move_distance(d)->block();
 
-    // Drive back at 80RPM and keep the block command for later
+    // Drive back at 100RPM and keep the block command for later
     robot->straight_drive->set_speed(100);
     auto drive_back = robot->straight_drive->move_distance(-d + 15);
 
