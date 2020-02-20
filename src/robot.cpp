@@ -16,7 +16,7 @@ private:
 
 public:
 	virtual bool check() override {
-        const double TARGET_SIZE = 0.02;
+        const double TARGET_SIZE = 0.015;
 
         auto pos = this->motor->get_position();
         return (pos < target_position + TARGET_SIZE) && (pos > target_position - TARGET_SIZE);
@@ -335,7 +335,7 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->left_drive_motor = new pros::Motor(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
     this->right_drive_motor = new pros::Motor(20, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
 
-    this->left_arm_motor = new pros::Motor(1, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
+    this->left_arm_motor = new pros::Motor(3, MOTOR_GEARSET_36, false, MOTOR_ENCODER_ROTATIONS);
     this->right_arm_motor = new pros::Motor(10, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->tray_motor = new pros::Motor(19, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
     this->left_roller_motor = new pros::Motor(2, MOTOR_GEARSET_36, true, MOTOR_ENCODER_ROTATIONS);
@@ -346,7 +346,7 @@ RobotDeviceInterfaces::RobotDeviceInterfaces() {
     this->straight_drive = new StraightDriveMotorSystem(this->left_drive, this->right_drive);
     this->turn_drive = new TurnDriveMotorSystem(this->left_drive, this->right_drive, 10.125);
 
-    this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor, 1.875);
+    this->roller = new RollerMotorSystem(this->left_roller_motor, this->right_roller_motor, 1.5);
     this->tray = new TrayMotorSystem(this->tray_motor);
     this->arm = new ArmMotorSystem(this->left_arm_motor, this->right_arm_motor);
     this->stack_setdown = new StackSetdownSystem(this->straight_drive, this->roller);

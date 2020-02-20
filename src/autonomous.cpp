@@ -9,7 +9,7 @@ int eucmod(int x, int m){
 
 void setdown(RobotDeviceInterfaces *robot){
     robot->roller->set_speed(50);
-    robot->roller->move_distance(5)->block();
+    robot->roller->move_distance(5.5)->block();
     robot->roller->move_distance(-1.5)->block();
     pros::delay(250);
 
@@ -31,7 +31,7 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
     double d = 36; // Distance to drive forward to pick up first stack
 
     // Drive forward at 55RPM
-    robot->straight_drive->set_speed(50);
+    robot->straight_drive->set_speed(60);
     robot->straight_drive->move_distance(d)->block();
 
     // Drive back at 100RPM and keep the block command for later
@@ -58,7 +58,7 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
         robot->turn_drive->move_angle(-0.38)->block();
         robot->straight_drive->move_distance(7.25)->block();
     } else {
-        robot->turn_drive->move_angle(0.385)->block();
+        robot->turn_drive->move_angle(0.38)->block();
         robot->straight_drive->move_distance(6.75)->block();
     }
 
@@ -67,7 +67,41 @@ void four_point_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
     // TODO: Put the tray back into the neutral position
 }
 
-const int default_autonomous_selection = 3;
+void big_side_autonomous(RobotDeviceInterfaces *robot, bool is_reversed){
+    // Drive forward then backward to push a cube into the goal zone.
+    unfold(robot);
+
+    robot->straight_drive->move_distance(24)->block();
+
+    if(is_reversed){
+        robot->turn_drive->move_angle(-0.08)->block();
+    } else {
+        robot->turn_drive->move_angle(0.075)->block();
+    }
+
+    robot->roller->move_velocity(-100);
+    robot->straight_drive->set_speed(200);
+    robot->straight_drive->move_distance(-2);
+    robot->straight_drive->move_distance(20)->block();
+    robot->roller->move_velocity(0);
+    pros::delay(250);
+
+    robot->turn_drive->set_speed(75);
+    if(is_reversed){
+        robot->turn_drive->move_angle(0.465)->block();
+    } else {
+        robot->turn_drive->move_angle(-0.46)->block();
+    }
+
+    robot->straight_drive->set_speed(100);
+    robot->roller->move_velocity(-100);
+    robot->straight_drive->move_distance(35)->block();
+    robot->roller->move_velocity(0);
+
+    setdown(robot);
+}
+
+const int default_autonomous_selection = 5;
 
 int autonomous_selection;
 std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomous_programs = {
@@ -86,45 +120,10 @@ std::vector<std::tuple<std::string, void (*)(RobotDeviceInterfaces*)>> autonomou
         four_point_autonomous(robot, true);
     }},
     {"red big autonomous", [](RobotDeviceInterfaces *robot){
-        // Drive forward then backward to push a cube into the goal zone.
-        unfold(robot);
-
-        robot->straight_drive->move_distance(25)->block();
-
-        robot->turn_drive->move_angle(0.09)->block();
-
-        robot->roller->move_velocity(-100);
-        robot->straight_drive->set_speed(200);
-        robot->straight_drive->move_distance(18)->block();
-        robot->roller->move_velocity(0);
-
-        robot->straight_drive->set_speed(100);
-
-        robot->turn_drive->move_angle(-0.465)->block();
-
-        robot->roller->move_velocity(-100);
-        robot->straight_drive->move_distance(33)->block();
-        robot->roller->move_velocity(0);
-
-        setdown(robot);
+        big_side_autonomous(robot, false);
     }},
-    {"small auto", [](RobotDeviceInterfaces *robot){
-        unfold(robot);
-
-        robot->roller->move_velocity(-100);
-        robot->straight_drive->move_distance(12)->block();
-        robot->roller->move_velocity(0);
-
-        robot->turn_drive->move_angle(0.2);
-
-        robot->roller->move_velocity(-100);
-        robot->straight_drive->move_distance(12);
-        robot->roller->move_velocity(0);
-
-
-        // setdown(robot);
-
-
+    {"blue big autonomous", [](RobotDeviceInterfaces *robot){
+        big_side_autonomous(robot, true);
     }},
     {"Unfold", [](RobotDeviceInterfaces *robot){
         unfold(robot);
